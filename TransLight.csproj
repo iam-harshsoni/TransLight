@@ -15,9 +15,6 @@
   <ItemGroup>
     <Folder Include="Areas\Dashboard\Data\" />
     <Folder Include="Areas\Dashboard\Models\" />
-    <Folder Include="Areas\Masters\Controllers\" />
-    <Folder Include="Areas\Masters\Data\" />
-    <Folder Include="Areas\Masters\Models\" />
   </ItemGroup>
 
   <ItemGroup>

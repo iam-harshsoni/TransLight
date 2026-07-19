@@ -1,7 +1,18 @@
+using Microsoft.EntityFrameworkCore;
+using TransLight.DataAccess.Data;
+using TransLight.Services.Interfaces.Masters;
+using TransLight.Services.Masters;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+
+builder.Services.AddDbContext<TransLightContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+builder.Services.AddScoped<IBankService, BankService>();
+
 
 var app = builder.Build();
 
@@ -20,15 +31,16 @@ app.UseRouting();
 
 app.UseAuthorization();
 
+app.MapControllerRoute(
+    name: "areas",
+    pattern: "{area:exists}/{controller=Dashboard}/{action=Index}/{id?}");
+
+
 app.MapGet("/", context =>
 {
     context.Response.Redirect("/Dashboard");
     return Task.CompletedTask;
 });
-
-app.MapControllerRoute(
-    name: "areas",
-    pattern: "{area:exists}/{controller=Dashboard}/{action=Index}/{id?}");
 
 app.MapControllerRoute(
     name: "default",

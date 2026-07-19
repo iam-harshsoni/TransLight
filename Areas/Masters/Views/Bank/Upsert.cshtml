@@ -1,0 +1,46 @@
+﻿@model BankVM
+
+<section id="basic-form-layouts">
+	<div class="row match-height">
+		<div class="col-md-12">
+			<div class="card">
+				<div class="card-header">
+					<a asp-action="index">
+						<i class="icon-arrow-circle-o-left"></i>
+					</a>
+					<h4 class="card-title" style="display:inline-block;">Banks Info</h4>
+
+					<a asp-action="Upsert" class="btn btn-outline-primary" asp-route-id="" style="float:right;">
+						<i class="icon-plus"></i> Add Bank
+					</a>
+				</div>
+
+				<div class="card-body collapse in">
+					<div class="card-block">
+						<form method="post" class="row" enctype="multipart/form-data">
+							<div class="form-body">
+								<div class="row p-1">
+									<div class="col-md-12">
+										<div class="form-group">
+											<input type="hidden" asp-for="Id" />
+											<label for="projectinput1">Bank Name <span class="text-danger">*</span></label>
+											<input asp-for="Name" class="form-control" placeholder="Bank Name" required/>
+										</div>
+									</div>
+								</div>
+							</div>
+
+							<div class="form-actions">
+								<a asp-action="Index" class="btn btn-warning"> <i class="icon-cross2"></i> Cancel</a>
+
+								<button type="submit" class="btn btn-primary">
+									<i class="icon-check2"></i> Save
+								</button>
+							</div>
+						</form>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</section>
