@@ -1,10 +1,12 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using TransLight.DataAccess.ViewModels;
 using TransLight.Models.Models;
 using TransLight.Services.Interfaces.Masters;
 
 namespace TransLight.Areas.Masters.Controllers
 {
+    [Authorize]
     [Area("Masters")]
     public class BankController : Controller
     {
