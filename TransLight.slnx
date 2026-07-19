@@ -1,3 +1,6 @@
 <Solution>
+  <Project Path="../TransLight.DataAccess/TransLight.DataAccess.csproj" Id="e4d60b58-7bb3-4116-9967-57617ec24e42" />
+  <Project Path="../TransLight.Services/TransLight.Services.csproj" Id="8ddfeb2b-8019-4bf3-b6ef-7402cb24f74a" />
+  <Project Path="../TransLight.Utility/TransLight.Utility.csproj" Id="fd3decf7-af83-4607-8376-492b6e206a2e" />
   <Project Path="TransLight.csproj" />
 </Solution>
