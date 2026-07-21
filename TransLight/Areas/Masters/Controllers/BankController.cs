@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using TransLight.DataAccess.Models;
 using TransLight.DataAccess.ViewModels;
-using TransLight.Models.Models;
 using TransLight.Services.Interfaces.Masters;
 
 namespace TransLight.Areas.Masters.Controllers
