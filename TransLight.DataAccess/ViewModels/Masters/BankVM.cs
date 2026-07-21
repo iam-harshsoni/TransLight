@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace TransLight.DataAccess.ViewModels
+namespace TransLight.DataAccess.ViewModels.Masters
 {
     public class BankVM
     {

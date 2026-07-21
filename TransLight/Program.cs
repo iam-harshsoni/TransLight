@@ -28,6 +28,7 @@ builder.Services.ConfigureApplicationCookie(options =>
 });
 
 builder.Services.AddScoped<IBankService, BankService>();
+builder.Services.AddScoped<ICountryService, CountryService>();
 
 
 var app = builder.Build();

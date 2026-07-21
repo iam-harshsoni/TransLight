@@ -1,14 +1,11 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using TransLight.DataAccess.Models;
-using TransLight.DataAccess.ViewModels;
+using TransLight.DataAccess.ViewModels.Masters;
 using TransLight.Services.Interfaces.Masters;
 
 namespace TransLight.Areas.Masters.Controllers
 {
-    [Authorize]
-    [Area("Masters")]
-    public class BankController : Controller
+    public class BankController : BaseController
     {
         private readonly ILogger<BankController> _logger;
         private readonly IBankService _bankService;
