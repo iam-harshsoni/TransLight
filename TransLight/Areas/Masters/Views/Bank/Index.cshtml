@@ -23,7 +23,7 @@
                                     <input type="text"
                                            class="form-control form-control-sm"
                                            placeholder="Search bank name..."
-                                           v-model="searchQuery"
+                                           v-model="search.name"
                                     @@input="debounceSearch" />
                                 </td>
                             </tr>
@@ -45,99 +45,57 @@
                 <div class="d-flex justify-content-between align-items-center p-2 bg-light border-top" v-if="totalPages > 1">
                     <nav aria-label="Table navigation">
                         <ul class="pagination pagination-sm mb-0" style="display: flex; list-style: none; padding-left: 0;">
-                            <li class="page-item" :class="{ disabled: currentPage === 1 }">
+                            <li class="page-item" :class="{ disabled: pageNumber === 1 }">
                                 <button class="page-link" @@click="changePage(1)">&laquo;</button>
                             </li>
-                            <li class="page-item" :class="{ disabled: currentPage === 1 }">
-                                <button class="page-link" @@click="changePage(currentPage - 1)">&lsaquo;</button>
+                            <li class="page-item" :class="{ disabled: pageNumber === 1 }">
+                                <button class="page-link" @@click="changePage(pageNumber - 1)">&lsaquo;</button>
                             </li>
 
-                            <li v-for="page in totalPages" :key="page" class="page-item" :class="{ active: currentPage === page }">
+                            <li v-for="page in totalPages" :key="page" class="page-item"
+                                :class="{ active: pageNumber === page }">
                                 <button class="page-link" @@click="changePage(page)">{{ page }}</button>
                             </li>
 
-                            <li class="page-item" :class="{ disabled: currentPage === totalPages }">
-                                <button class="page-link" @@click="changePage(currentPage + 1)">&rsaquo;</button>
+                            <li class="page-item" :class="{ disabled: pageNumber === totalPages }">
+                                <button class="page-link" @@click="changePage(pageNumber + 1)">&rsaquo;</button>
                             </li>
-                            <li class="page-item" :class="{ disabled: currentPage === totalPages }">
+                            <li class="page-item" :class="{ disabled: pageNumber === totalPages }">
                                 <button class="page-link" @@click="changePage(totalPages)">&raquo;</button>
                             </li>
                         </ul>
                     </nav>
                     <div class="text-muted small">
-                        Showing {{ (currentPage - 1) * pageSize + 1 }} to {{ Math.min(currentPage * pageSize, totalItems) }} of {{ totalItems }} entries
+                        Showing {{ (pageNumber - 1) * pageSize + 1 }} to {{ Math.min(pageNumber * pageSize, totalItems) }} of {{ totalItems }} entries
                     </div>
                 </div>
-
             </div>
         </div>
     </div>
 </div>
 
 @section Scripts {
-    <!-- Only Vue 3 script needed now -->
-    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
-
     <script>
-        const { createApp, ref, onMounted } = Vue;
+        const { createApp, onMounted } = Vue;
 
         createApp({
             setup() {
-                const banks = ref([]);
-                const searchQuery = ref('');
-                const currentPage = ref(1);
-                const pageSize = ref(10);
-                const totalPages = ref(1);
-                const totalItems = ref(0);
-
-                let debounceTimer = null;
-
-                // Native fetch alternative targeting the Masters Area route
-                const fetchBanks = async () => {
-                    try {
-                        const url = `/Masters/Bank/GetBanksData?search=${encodeURIComponent(searchQuery.value)}&pageNumber=${currentPage.value}&pageSize=${pageSize.value}`;
-
-                        const response = await fetch(url);
-                        const data = await response.json();
-
-                        banks.value = data.items;
-                        totalItems.value = data.totalItems;
-                        totalPages.value = data.totalPages;
-                    } catch (error) {
-                        console.error("Error fetching bank data:", error);
+                const listManager = createListManager({
+                    url: "/Masters/Country/GetBanksData",
+                    pageSize: 10,
+                    search: {
+                        name: ""
                     }
-                };
-
-                const debounceSearch = () => {
-                    clearTimeout(debounceTimer);
-                    debounceTimer = setTimeout(() => {
-                        currentPage.value = 1;
-                        fetchBanks();
-                    }, 350);
-                };
-
-                const changePage = (page) => {
-                    if (page >= 1 && page <= totalPages.value) {
-                        currentPage.value = page;
-                        fetchBanks();
-                    }
-                };
+                });
 
                 onMounted(() => {
-                    fetchBanks();
+                    listManager.load();
                 });
 
                 return {
-                    banks,
-                    searchQuery,
-                    currentPage,
-                    pageSize,
-                    totalPages,
-                    totalItems,
-                    debounceSearch,
-                    changePage
+                    ...listManager
                 };
             }
-        }).mount('#app');
+        }).mount("#app");
     </script>
 }

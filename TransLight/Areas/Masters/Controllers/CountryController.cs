@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using TransLight.DataAccess.Common;
 using TransLight.DataAccess.Models;
 using TransLight.DataAccess.ViewModels.Masters;
 using TransLight.Services.Interfaces.Masters;
@@ -20,13 +21,18 @@ namespace TransLight.Areas.Masters.Controllers
             return View();
         }
 
-        public IActionResult GetCountriesData(string? search, int pageNumber = 1, int pageSize = 10)
+        public IActionResult GetCountriesData(string? code, string? name, int pageNumber = 1, int pageSize = 10)
         {
             var query = _countryService.GetAll().AsQueryable();
 
-            if (!string.IsNullOrEmpty(search))
+            if (!string.IsNullOrWhiteSpace(code))
             {
-                query = query.Where(x => x.Name != null && x.Name.Contains(search, StringComparison.OrdinalIgnoreCase));
+                query = query.Where(x => x.Code != null && x.Code.Contains(code, StringComparison.OrdinalIgnoreCase));
+            }
+
+            if (!string.IsNullOrWhiteSpace(name))
+            {
+                query = query.Where(x => x.Name != null && x.Name.Contains(name, StringComparison.OrdinalIgnoreCase));
             }
 
             int totalCounties = query.Count();
@@ -36,17 +42,17 @@ namespace TransLight.Areas.Masters.Controllers
                 .Take(pageSize)
                 .Select(x => new CountryVM()
                 {
-                    Id = x.Id,
+                    Id   = x.Id,
                     Code = x.Code,
                     Name = x.Name
-                });
+                }).ToList();
 
-            return Json(new
+            return Json(new PaginatedResponse<CountryVM>
             {
-                items,
-                totalCounties,
-                totalPages = (int)Math.Ceiling((double)totalCounties / pageSize),
-                currentPage = pageNumber
+                Items       = items,
+                TotalItems  = totalCounties,
+                TotalPages  = (int)Math.Ceiling((double)totalCounties / pageSize),
+                CurrentPage = pageNumber
             });
         }
 
