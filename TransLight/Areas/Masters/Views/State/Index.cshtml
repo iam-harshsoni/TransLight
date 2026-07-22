@@ -1,0 +1,134 @@
+﻿@model IEnumerable<CountryVM>
+
+<div id="app" class="row" v-cloak>
+    <div class="col-xs-12">
+        <div class="card">
+            <div class="card-header">
+                <h4 class="card-title" style="display:inline-block;">All States</h4>
+                <a asp-action="Upsert" class="btn btn-outline-primary" style="float:right;">
+                    <i class="icon-plus"></i>
+                </a>
+            </div>
+
+            <div class="card-body collapse in">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead>
+                            <tr>
+                                <th>Code</th>
+                                <th>GST</th>
+                                <th>Name</th>
+                                <th>Union Territory</th>
+                                <th>Country</th>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <input type="text" class="form-control form-control-sm" placeholder="Search code..."
+                                           v-model="search.code" />
+                                </td>
+                                
+                                <td>
+                                    <input type="text" class="form-control form-control-sm" placeholder="Search gst..."
+                                           v-model="search.gst" />
+                                </td>
+
+                                <td>
+                                    <input type="text" class="form-control form-control-sm" placeholder="Search name..."
+                                           v-model="search.name" />
+                                </td>
+
+                                <td>
+                                    <select class="form-control" v-model="search.union_t">
+                                        <option :value="1">No</option>
+                                        <option :value="0">Yes</option>
+                                    </select>
+                                </td>
+
+                                <td>
+                                    <input type="text" class="form-control form-control-sm" placeholder="Search country..."
+                                           v-model="search.country" />
+                                </td>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            <tr v-for="item in items" :key="item.id">
+                                <td>{{ item.code }}</td>
+                                <td>{{ item.gst }}</td>
+                                <td>
+                                    <a :href="'/Masters/State/Upsert/' + item.id">{{ item.name }}</a>
+                                </td>
+                                <td>{{ item.unionTerritory }}</td>
+                                <td>{{ item.countryName}}</td>
+                            </tr>
+                            <tr v-if="items.length === 0 && !loading">
+                                <td colspan="2" class="text-center text-muted py-3">No matching states found.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Pagination Footer -->
+                <div class="d-flex justify-content-between align-items-center p-2 bg-light border-top"
+                     v-if="totalPages > 1">
+                    <nav aria-label="Table navigation">
+                        <ul class="pagination pagination-sm mb-0" style="display: flex; list-style: none; padding-left: 0;">
+                            <li class="page-item" :class="{ disabled: pageNumber === 1 }">
+                                <button class="page-link" @@click="changePage(1)">&laquo;</button>
+                            </li>
+                            <li class="page-item" :class="{ disabled: pageNumber === 1 }">
+                                <button class="page-link" @@click="changePage(pageNumber - 1)">&lsaquo;</button>
+                            </li>
+
+                            <li v-for="page in totalPages" :key="page" class="page-item"
+                                :class="{ active: pageNumber === page }">
+                                <button class="page-link" @@click="changePage(page)">{{ page }}</button>
+                            </li>
+
+                            <li class="page-item" :class="{ disabled: pageNumber === totalPages }">
+                                <button class="page-link" @@click="changePage(pageNumber + 1)">&rsaquo;</button>
+                            </li>
+                            <li class="page-item" :class="{ disabled: pageNumber === totalPages }">
+                                <button class="page-link" @@click="changePage(totalPages)">&raquo;</button>
+                            </li>
+                        </ul>
+                    </nav>
+                    <div class="text-muted small">
+                        Showing {{ (pageNumber - 1) * pageSize + 1 }} to {{ Math.min(pageNumber * pageSize, totalItems) }} of {{ totalItems }} entries
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        const { createApp, onMounted } = Vue;
+
+        createApp({
+            setup() {
+                const listManager = createListManager({
+                    url: "/Masters/State/GetStatesData",
+                    pageSize: 10,
+                    search: {
+                        code: "",
+                        gst: "",
+                        name: "",
+                        union_t: "",
+                        country: "",
+                    }
+                });
+
+                onMounted(() => {
+                    listManager.load();
+                });
+
+                return {
+                    ...listManager
+                };
+            }
+        }).mount("#app");
+    </script>
+}

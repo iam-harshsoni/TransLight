@@ -3,13 +3,20 @@ using Microsoft.EntityFrameworkCore;
 using TransLight.DataAccess.Data;
 using TransLight.DataAccess.IdentityModel;
 using TransLight.DataAccess.Seeder;
+using TransLight.Services;
+using TransLight.Services.Interfaces;
 using TransLight.Services.Interfaces.Masters;
 using TransLight.Services.Masters;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-builder.Services.AddControllersWithViews();
+builder.Services.AddControllersWithViews()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.Converters.Add(
+            new System.Text.Json.Serialization.JsonStringEnumConverter());
+    });
 
 builder.Services.AddDbContext<TransLightContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
@@ -27,8 +34,11 @@ builder.Services.ConfigureApplicationCookie(options =>
     options.AccessDeniedPath = "/UserManagement/Account/AccessDenied";
 });
 
+builder.Services.AddScoped<ILookupService, LookupService>();
+
 builder.Services.AddScoped<IBankService, BankService>();
 builder.Services.AddScoped<ICountryService, CountryService>();
+builder.Services.AddScoped<IStateService, StateService>();
 
 
 var app = builder.Build();

@@ -1,0 +1,105 @@
+﻿@model StateVM
+
+@{
+	
+	var countries = (ViewBag.Countries as IEnumerable<CountryVM>)?.ToList() ?? new List<CountryVM>();
+	// @ViewBag.Countries?.GetType().FullName
+}
+
+<section id="basic-form-layouts">
+	<div class="row match-height">
+		<div class="col-md-12">
+			<div class="card">
+				<div class="card-header">
+					<a asp-action="index">
+						<i class="icon-arrow-circle-o-left"></i>
+					</a>
+					<h4 class="card-title" style="display:inline-block;">Country Info</h4>
+
+					<a asp-action="Upsert" class="btn btn-outline-primary" asp-route-id="" style="float:right;">
+						<i class="icon-plus"></i>
+					</a>
+				</div>
+
+				<div class="card-body collapse in">
+					<div class="card-block">
+						<form method="post" class="row" enctype="multipart/form-data">
+							<div class="form-body">
+								<div class="row">
+									<div class="col-md-4">
+										<div class="form-group">
+											<input type="hidden" asp-for="Id" />
+											<label for="projectinput1">Code <span class="text-danger">*</span></label>
+											<input asp-for="Code" class="form-control" placeholder="Code" required />
+										</div>
+									</div>
+
+									<div class="col-md-4">
+										<div class="form-group">
+											<label for="projectinput1">Gst <span class="text-danger">*</span></label>
+											<input asp-for="Gst" class="form-control" placeholder="Gst" required />
+										</div>
+									</div>
+
+									<div class="col-md-4">
+										<div class="form-group">
+											<label for="projectinput1">Union Territory <span class="text-danger">*</span></label>
+											<select class="form-control" asp-for="UnionTerritory">
+												<option value="1">No</option>
+												<option value="0">Yes</option>
+											</select>
+										</div>
+									</div>
+								</div>
+
+								<div class="row">
+									<div class="col-md-12">
+										<div class="form-group">
+											<label for="projectinput1">Name <span class="text-danger">*</span></label>
+											<input asp-for="Name" class="form-control" placeholder="Name" required />
+										</div>
+									</div>
+								</div>
+
+								<div class="row">
+									<div class="col-md-12">
+										<div class="form-group">
+											<label for="projectinput1">Country <span class="text-danger">*</span></label>
+											<select asp-for="CountryId" class="form-select country-select">
+												<option value=""> -- Select Country -- </option>
+												@foreach (var item in countries)
+												{
+													<option value="@item.Id">@item.Name</option>
+												}
+											</select>
+										</div>
+									</div>
+								</div>
+							</div>
+
+							<div class="form-actions">
+								<a asp-action="Index" class="btn btn-warning"> <i class="icon-cross2"></i> Cancel</a>
+
+								<button type="submit" class="btn btn-primary">
+									<i class="icon-check2"></i> Save
+								</button>
+							</div>
+						</form>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</section>
+
+@section Scripts {
+	<script>
+		$(document).ready(function() {
+			$('.country-select').select2({
+				placeholder: 'Search country....',
+				allowClear: true,
+				width: '100%'
+			})
+		})
+	</script>
+}

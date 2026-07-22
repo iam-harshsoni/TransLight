@@ -42,16 +42,16 @@ namespace TransLight.Areas.Masters.Controllers
                 .Take(pageSize)
                 .Select(x => new CountryVM()
                 {
-                    Id   = x.Id,
+                    Id = x.Id,
                     Code = x.Code,
                     Name = x.Name
                 }).ToList();
 
             return Json(new PaginatedResponse<CountryVM>
             {
-                Items       = items,
-                TotalItems  = totalCounties,
-                TotalPages  = (int)Math.Ceiling((double)totalCounties / pageSize),
+                Items = items,
+                TotalItems = totalCounties,
+                TotalPages = (int)Math.Ceiling((double)totalCounties / pageSize),
                 CurrentPage = pageNumber
             });
         }
@@ -87,12 +87,10 @@ namespace TransLight.Areas.Masters.Controllers
             {
                 var country = new Country()
                 {
+                    Id = countryVM.Id ?? Guid.Empty,
                     Code = countryVM.Code,
                     Name = countryVM.Name
                 };
-
-                if (countryVM.Id.HasValue)
-                    countryVM.Id = countryVM.Id.Value;
 
                 if (countryVM.Id == null)
                 {
@@ -104,7 +102,7 @@ namespace TransLight.Areas.Masters.Controllers
                 else
                 {
                     _countryService.Update(country);
-                    _logger.LogInformation($"New country '{countryVM.Name}' updated successfully");
+                    _logger.LogInformation($"Country '{countryVM.Name}' updated successfully");
                     TempData["Success"] = "Country updated successfully.";
                 }
             }
