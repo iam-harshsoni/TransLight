@@ -29,13 +29,13 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr v-for="item in banks" :key="item.id">
+                            <tr v-for="item in items" :key="item.id">
                                 <td>
                                     <a :href="'/Masters/Bank/Upsert/' + item.id">{{ item.name }}</a>
                                 </td>
                             </tr>
-                            <tr v-if="banks.length === 0">
-                                <td class="text-center text-muted py-3">No matching banks found.</td>
+                            <tr v-if="items.length === 0 && !loading">
+                                <td colspan="2" class="text-center text-muted py-3">No matching states found.</td>
                             </tr>
                         </tbody>
                     </table>
@@ -81,7 +81,7 @@
         createApp({
             setup() {
                 const listManager = createListManager({
-                    url: "/Masters/Country/GetBanksData",
+                    url: "/Masters/Bank/GetBanksData",
                     pageSize: 10,
                     search: {
                         name: ""
