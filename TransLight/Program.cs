@@ -40,6 +40,7 @@ builder.Services.AddScoped<IBankService, BankService>();
 builder.Services.AddScoped<ICountryService, CountryService>();
 builder.Services.AddScoped<IStateService, StateService>();
 builder.Services.AddScoped<IUnitService, UnitService>();
+builder.Services.AddScoped<ICurrencyService, CurrencyService>();
 
 
 var app = builder.Build();
