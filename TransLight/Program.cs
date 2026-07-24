@@ -39,6 +39,7 @@ builder.Services.AddScoped<ILookupService, LookupService>();
 builder.Services.AddScoped<IBankService, BankService>();
 builder.Services.AddScoped<ICountryService, CountryService>();
 builder.Services.AddScoped<IStateService, StateService>();
+builder.Services.AddScoped<IUnitService, UnitService>();
 
 
 var app = builder.Build();

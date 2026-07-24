@@ -24,13 +24,13 @@ namespace TransLight.Areas.Masters.Controllers
 
         // 2. This API endpoint handles the live searching and pagination requests from Vue
         [HttpGet]
-        public IActionResult GetBanksData(string? search, int pageNumber = 1, int pageSize = 10)
+        public IActionResult GetBanksData(string? name, int pageNumber = 1, int pageSize = 10)
         {
             var query = _bankService.GetAll().AsQueryable();
 
-            if (!string.IsNullOrWhiteSpace(search))
+            if (!string.IsNullOrWhiteSpace(name))
             {
-                query = query.Where(x => x.Name != null && x.Name.Contains(search, StringComparison.OrdinalIgnoreCase));
+                query = query.Where(x => x.Name != null && x.Name.Contains(name, StringComparison.OrdinalIgnoreCase));
             }
 
             int totalItems = query.Count();

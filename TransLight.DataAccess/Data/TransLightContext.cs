@@ -1,4 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System;
+using System.Collections.Generic;
+using Microsoft.EntityFrameworkCore;
 using TransLight.DataAccess.Models;
 
 namespace TransLight.DataAccess.Data;
@@ -22,7 +24,14 @@ public partial class TransLightContext : DbContext
 
     public virtual DbSet<Country> Countries { get; set; }
 
+    public virtual DbSet<Currency> Currencies { get; set; }
+
     public virtual DbSet<State> States { get; set; }
+
+    public virtual DbSet<Unit> Units { get; set; }
+
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        => optionsBuilder.UseSqlServer("Name=ConnectionStrings:DefaultConnection");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -231,9 +240,26 @@ public partial class TransLightContext : DbContext
                 .HasColumnName("name");
         });
 
+        modelBuilder.Entity<Currency>(entity =>
+        {
+            entity.ToTable("currencies");
+
+            entity.Property(e => e.Id).HasDefaultValueSql("(newsequentialid())");
+            entity.Property(e => e.Code)
+                .HasMaxLength(3)
+                .IsUnicode(false)
+                .IsFixedLength()
+                .HasColumnName("code");
+            entity.Property(e => e.Name)
+                .HasMaxLength(255)
+                .HasColumnName("name");
+        });
+
         modelBuilder.Entity<State>(entity =>
         {
             entity.ToTable("states");
+
+            entity.HasIndex(e => e.CountryId, "IX_states_countries");
 
             entity.Property(e => e.Id).HasDefaultValueSql("(newsequentialid())");
             entity.Property(e => e.Code)
@@ -256,6 +282,21 @@ public partial class TransLightContext : DbContext
                 .HasForeignKey(d => d.CountryId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_states_countries");
+        });
+
+        modelBuilder.Entity<Unit>(entity =>
+        {
+            entity.ToTable("units");
+
+            entity.Property(e => e.Id).HasDefaultValueSql("(newsequentialid())");
+            entity.Property(e => e.Code)
+                .HasMaxLength(3)
+                .IsUnicode(false)
+                .IsFixedLength()
+                .HasColumnName("code");
+            entity.Property(e => e.Name)
+                .HasMaxLength(255)
+                .HasColumnName("name");
         });
 
         OnModelCreatingPartial(modelBuilder);

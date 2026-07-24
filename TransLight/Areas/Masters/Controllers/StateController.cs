@@ -42,8 +42,8 @@ namespace TransLight.Areas.Masters.Controllers
             if (union_t > -1)
                 query = query.Where(x => x.UnionTerritory == union_t);
 
-            if (!string.IsNullOrWhiteSpace(country))
-                query = query.Where(x => x.Country.Name != null && x.Country.Name.Contains(country, StringComparison.OrdinalIgnoreCase));
+            //if (!string.IsNullOrWhiteSpace(country))
+            //    query = query.Where(x => x.Country.Name != null && x.Country.Name.Contains(country, StringComparison.OrdinalIgnoreCase));
 
             //if (!string.IsNullOrWhiteSpace(union_t) && Enum.TryParse<YesNo>(union_t, true, out var unionTerritory))
             //{
