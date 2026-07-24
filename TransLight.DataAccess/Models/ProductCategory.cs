@@ -3,13 +3,13 @@ using System.Collections.Generic;
 
 namespace TransLight.DataAccess.Models;
 
-public partial class Unit
+public partial class ProductCategory
 {
     public Guid Id { get; set; }
 
-    public string Code { get; set; } = null!;
-
     public string Name { get; set; } = null!;
+
+    public int Active { get; set; }
 
     public virtual ICollection<PackingMaterial> PackingMaterials { get; set; } = new List<PackingMaterial>();
 
