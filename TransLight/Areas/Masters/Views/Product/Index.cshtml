@@ -16,7 +16,7 @@
                         <thead>
                             <tr>
                                 <th>Category</th>
-                                <th width="250px">Name</th>
+                                <th>Name</th>
                                 <th>Make</th>
                                 <th>Pack</th>
                                 <th>Unit</th>
@@ -81,7 +81,7 @@
                                 <td>{{ item.gst }}</td>
                                 <td>{{ item.hsn }}</td>
                                 <td>{{ item.msl }}</td>
-                                <td><span :class="item.active == 'Yes' ? 'tag tag-success' : 'tag tag-danger'">{{ item.active }}</span></td>
+                                <td class="text-center"><span :class="item.active == 'Yes' ? 'tag tag-success' : 'tag tag-danger'">{{ item.active }}</span></td>
                             </tr>
                             <tr v-if="items.length === 0 && !loading">
                                 <td colspan="10" class="text-center text-muted py-3">No matching raw materials found.</td>
