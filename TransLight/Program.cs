@@ -42,6 +42,7 @@ builder.Services.AddScoped<IStateService, StateService>();
 builder.Services.AddScoped<IUnitService, UnitService>();
 builder.Services.AddScoped<ICurrencyService, CurrencyService>();
 builder.Services.AddScoped<IProductCategoryService, ProductCategoryService>();
+builder.Services.AddScoped<IRawMaterialService, RawMaterialService>();
 
 
 var app = builder.Build();

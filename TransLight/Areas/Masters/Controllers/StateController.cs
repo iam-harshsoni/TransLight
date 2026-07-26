@@ -39,17 +39,11 @@ namespace TransLight.Areas.Masters.Controllers
             if (!string.IsNullOrWhiteSpace(name))
                 query = query.Where(x => x.Name != null && x.Name.Contains(name, StringComparison.OrdinalIgnoreCase));
 
+            if (!string.IsNullOrWhiteSpace(country))
+                query = query.Where(x => x.Country.Name != null && x.Country.Name.Contains(country, StringComparison.OrdinalIgnoreCase));
+
             if (union_t > -1)
                 query = query.Where(x => x.UnionTerritory == union_t);
-
-            //if (!string.IsNullOrWhiteSpace(country))
-            //    query = query.Where(x => x.Country.Name != null && x.Country.Name.Contains(country, StringComparison.OrdinalIgnoreCase));
-
-            //if (!string.IsNullOrWhiteSpace(union_t) && Enum.TryParse<YesNo>(union_t, true, out var unionTerritory))
-            //{
-            //    query = query.Where(x => x.UnionTerritory == (int)unionTerritory);
-            //}
-
 
             int totalStates = query.Count();
 

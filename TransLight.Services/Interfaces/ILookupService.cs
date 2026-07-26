@@ -5,6 +5,10 @@ namespace TransLight.Services.Interfaces
     public interface ILookupService
     {
         Task<IEnumerable<CountryVM>> GetCountriesAsync();
+        Task<IEnumerable<ProductCategoryVM>> GetProductCategoriesAsync();
+        Task<IEnumerable<UnitVM>> GetUnitsAsync();
+
+
         //Task<IEnumerable<BankVM>> GetBanksAsync();
         //Task<IEnumerable<StateVM>> GetStatesAsync();
         //Task<IEnumerable<BankBranchVM>> GetBankBranchAsync();

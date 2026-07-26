@@ -11,23 +11,23 @@ public partial class RawMaterial
 
     public string Name { get; set; } = null!;
 
-    public string Make { get; set; } = null!;
+    public string? Make { get; set; }
 
-    public string Pack { get; set; } = null!;
+    public string? Pack { get; set; }
 
-    public Guid UnitId { get; set; }
+    public Guid? UnitId { get; set; }
 
     public decimal Rate { get; set; }
 
-    public decimal Gst { get; set; }
+    public decimal? Gst { get; set; }
 
     public string Hsn { get; set; } = null!;
 
-    public int Msl { get; set; }
+    public int? Msl { get; set; }
 
     public int Active { get; set; }
 
     public virtual ProductCategory Category { get; set; } = null!;
 
-    public virtual Unit Unit { get; set; } = null!;
+    public virtual Unit? Unit { get; set; }
 }

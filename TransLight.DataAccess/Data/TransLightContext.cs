@@ -337,7 +337,9 @@ public partial class TransLightContext : DbContext
             entity.Property(e => e.Make)
                 .HasMaxLength(255)
                 .HasColumnName("make");
-            entity.Property(e => e.Msl).HasColumnName("msl");
+            entity.Property(e => e.Msl)
+                .HasDefaultValue(0)
+                .HasColumnName("msl");
             entity.Property(e => e.Name)
                 .HasMaxLength(255)
                 .HasColumnName("name");
@@ -356,7 +358,6 @@ public partial class TransLightContext : DbContext
 
             entity.HasOne(d => d.Unit).WithMany(p => p.RawMaterials)
                 .HasForeignKey(d => d.UnitId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_raw_materials_units");
         });
 
