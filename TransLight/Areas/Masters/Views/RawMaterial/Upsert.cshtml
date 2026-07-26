@@ -30,7 +30,7 @@
 									<div class="col-md-3">
 										<div class="form-group">
 											<label>Product category <span class="text-danger">*</span></label>
-											<select asp-for="CategoryId" class="form-select category-select">
+											<select asp-for="CategoryId" class="form-select category-select" required>
 												<option value=""> -- Select Category -- </option>
 												@foreach (var item in categories)
 												{
@@ -79,7 +79,7 @@
 									<div class="col-md-3">
 										<div class="form-group">
 											<label>Rate</label>
-											<input asp-for="Rate" class="form-control text-right" placeholder="Rate" />
+											<input asp-for="Rate" class="form-control text-md-right" value="0.00" placeholder="Rate" />
 										</div>
 									</div>
 								</div>
@@ -88,7 +88,7 @@
 									<div class="col-md-3">
 										<div class="form-group">
 											<label>Gst (%) <span class="text-danger">*</span></label>
-											<input asp-for="Gst" class="form-control text-right" placeholder="Gst" required />
+											<input asp-for="Gst" class="form-control text-md-right" placeholder="Gst" required />
 										</div>
 									</div>
 

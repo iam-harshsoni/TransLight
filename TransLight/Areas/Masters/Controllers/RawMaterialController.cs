@@ -81,56 +81,6 @@ namespace TransLight.Areas.Masters.Controllers
             });
         }
 
-        //public IActionResult GetStatesData(Guid? category, string? name, string? make, string? pack, Guid? unit, string? hsn, int pageNumber = 1, int pageSize = 10)
-        //{
-        //    var query = _rawMaterialService.GetAll("Category,Unit").AsQueryable();
-
-        //    if (!string.IsNullOrWhiteSpace(name))
-        //        query = query.Where(x => x.Name != null && x.Name.Contains(name, StringComparison.OrdinalIgnoreCase));
-
-        //    if (!string.IsNullOrWhiteSpace(make))
-        //        query = query.Where(x => x.Make != null && x.Make.Contains(make, StringComparison.OrdinalIgnoreCase));
-
-        //    if (!string.IsNullOrWhiteSpace(pack))
-        //        query = query.Where(x => x.Pack != null && x.Pack.Contains(pack, StringComparison.OrdinalIgnoreCase));
-
-        //    if (!string.IsNullOrWhiteSpace(hsn))
-        //        query = query.Where(x => x.Hsn != null && x.Hsn.Contains(hsn, StringComparison.OrdinalIgnoreCase));
-
-        //    if (unit != null)
-        //        query = query.Where(x => x.UnitId == unit);
-
-        //    if (category != null)
-        //        query = query.Where(x => x.CategoryId == category);
-
-        //    int totalRawMaterials = query.Count();
-
-        //    var items = query
-        //        .Skip((pageNumber - 1) * pageSize)
-        //        .Take(pageSize)
-        //        .Select(x => new RawMaterialVM()
-        //        {
-        //            Id = x.Id,
-        //            Name = x.Name,
-        //            Make = x.Make,
-        //            Pack = x.Pack,
-        //            Rate = x.Rate,
-        //            Gst = x.Gst,
-        //            Hsn = x.Hsn,
-        //            Msl = x.Msl,
-        //            CategoryName = x.Category.Name,
-        //            Unit = x.Unit.Name,
-        //        }).ToList();
-
-        //    return Json(new PaginatedResponse<RawMaterialVM>
-        //    {
-        //        Items = items,
-        //        TotalItems = totalRawMaterials,
-        //        TotalPages = (int)Math.Ceiling((double)totalRawMaterials / pageSize),
-        //        CurrentPage = pageNumber
-        //    });
-        //}
-
         public async Task<IActionResult> Upsert(Guid? id)
         {
             ViewBag.Categories = await _lookupService.GetProductCategoriesAsync();
@@ -171,6 +121,15 @@ namespace TransLight.Areas.Masters.Controllers
             {
                 ViewBag.Categories = await _lookupService.GetProductCategoriesAsync();
                 ViewBag.Units = await _lookupService.GetUnitsAsync();
+
+                var errors = ModelState
+                    .Where(x => x.Value?.Errors.Count > 0)
+                    .SelectMany(x => x.Value!.Errors)
+                    .Select(x => x.ErrorMessage)
+                    .ToList();
+
+                TempData["Error"] = string.Join("<br/>", errors);
+
                 return View(rawMaterialVM);
             }
 
@@ -196,13 +155,13 @@ namespace TransLight.Areas.Masters.Controllers
                     // create
                     _rawMaterialService.Add(rawMaterial);
                     _logger.LogInformation($"New Raw Material '{rawMaterialVM.Name}' added successfully");
-                    TempData["Success"] = "State saved successfully.";
+                    TempData["Success"] = "Raw Material saved successfully.";
                 }
                 else
                 {
                     _rawMaterialService.Update(rawMaterial);
                     _logger.LogInformation($"Raw Material '{rawMaterialVM.Name}' updated successfully");
-                    TempData["Success"] = "State updated successfully.";
+                    TempData["Success"] = "Raw Material updated successfully.";
                 }
                 ViewBag.Categories = await _lookupService.GetProductCategoriesAsync();
                 ViewBag.Units = await _lookupService.GetUnitsAsync();
