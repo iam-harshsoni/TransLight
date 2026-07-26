@@ -1,0 +1,152 @@
+﻿@model PackingMaterialVM
+
+@{
+
+	var categories = (ViewBag.Categories as IEnumerable<ProductCategoryVM>)?.ToList() ?? new List<ProductCategoryVM>();
+	var units = (ViewBag.Units as IEnumerable<UnitVM>)?.ToList() ?? new List<UnitVM>();
+}
+
+<section id="basic-form-layouts">
+	<div class="row match-height">
+		<div class="col-md-12">
+			<div class="card">
+				<div class="card-header">
+					<a asp-action="index">
+						<i class="icon-arrow-circle-o-left"></i>
+					</a>
+					<h4 class="card-title" style="display:inline-block;">Packing Material Info</h4>
+
+					<a asp-action="Upsert" class="btn btn-outline-primary" asp-route-id="" style="float:right;">
+						<i class="icon-plus"></i>
+					</a>
+				</div>
+
+				<div class="card-body collapse in">
+					<div class="card-block">
+						<form method="post" enctype="multipart/form-data">
+							<div class="form-body">
+								<div class="row">
+									<input type="hidden" asp-for="Id" />
+									<div class="col-md-3">
+										<div class="form-group">
+											<label>Product category <span class="text-danger">*</span></label>
+											<select asp-for="CategoryId" class="form-select category-select" required>
+												<option value=""> -- Select Category -- </option>
+												@foreach (var item in categories)
+												{
+													<option value="@item.Id">@item.Name</option>
+												}
+											</select>
+										</div>
+									</div>
+
+									<div class="col-md-9">
+										<div class="form-group">
+											<label>Product Name <span class="text-danger">*</span></label>
+											<input asp-for="Name" class="form-control" placeholder="Name" required />
+										</div>
+									</div>
+								</div>
+
+								<div class="row">
+									<div class="col-md-3">
+										<div class="form-group">
+											<label>Make</label>
+											<input asp-for="Make" class="form-control" placeholder="Make"/>
+										</div>
+									</div>
+
+									<div class="col-md-3">
+										<div class="form-group">
+											<label>Pack</label>
+											<input asp-for="Pack" class="form-control" placeholder="Pack"/>
+										</div>
+									</div>
+
+									<div class="col-md-3">
+										<div class="form-group">
+											<label>Unit</label>
+											<select asp-for="UnitId" class="form-select unit-select">
+												<option value=""> -- Select Unit -- </option>
+												@foreach (var item in units)
+												{
+													<option value="@item.Id">@item.Name</option>
+												}
+											</select>
+										</div>
+									</div>
+
+									<div class="col-md-3">
+										<div class="form-group">
+											<label>Rate</label>
+											<input asp-for="Rate" class="form-control text-md-right" value="0.00" placeholder="Rate" />
+										</div>
+									</div>
+								</div>
+
+                                <div class="row">
+									<div class="col-md-3">
+										<div class="form-group">
+											<label>Gst (%) <span class="text-danger">*</span></label>
+											<input asp-for="Gst" class="form-control text-md-right" placeholder="Gst" required />
+										</div>
+									</div>
+
+									<div class="col-md-3">
+										<div class="form-group">
+											<label>HSN <span class="text-danger">*</span></label>
+											<input asp-for="Hsn" class="form-control" placeholder="Hsn" required />
+										</div>
+									</div>
+
+									<div class="col-md-3">
+										<div class="form-group">
+											<label>Minimum Stock Level (MSL)</label>
+											<input asp-for="Msl" class="form-control" placeholder="Msl" />
+										</div>
+									</div>
+
+									<div class="col-md-3">
+										<div class="form-group">
+											<label>Active</label>
+											<select class="form-control" asp-for="Active">
+												<option value="1">No</option>
+												<option value="0">Yes</option>
+											</select>
+										</div>
+									</div>
+								</div>
+							</div>
+
+							<div class="form-actions">
+								<a asp-action="Index" class="btn btn-warning"> <i class="icon-cross2"></i> Cancel</a>
+
+								<button type="submit" class="btn btn-primary">
+									<i class="icon-check2"></i> Save
+								</button>
+							</div>
+						</form>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</section>
+
+@section Scripts {
+	<script>
+		$(document).ready(function() {
+			$('.category-select').select2({
+				placeholder: 'Search category....',
+				allowClear: true,
+				width: '100%'
+			});
+
+			$('.unit-select').select2({
+				placeholder: 'Search unit....',
+				allowClear: true,
+				width: '100%'
+			});
+		})
+	</script>
+}
