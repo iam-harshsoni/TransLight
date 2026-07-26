@@ -13,12 +13,12 @@ namespace TransLight.Areas.Masters.Controllers
     {
         private readonly ILogger<RawMaterialController> _logger;
         private readonly ILookupService _lookupService;
-        private readonly IRawMaterialService _rawMaterialService;
+        private readonly IProductService _productService;
 
-        public RawMaterialController(ILogger<RawMaterialController> logger, IRawMaterialService rawMaterialService, ILookupService lookupService)
+        public RawMaterialController(ILogger<RawMaterialController> logger, IProductService productService, ILookupService lookupService)
         {
             _logger = logger;
-            _rawMaterialService = rawMaterialService;
+            _productService = productService;
             _lookupService = lookupService;
         }
 
@@ -29,7 +29,7 @@ namespace TransLight.Areas.Masters.Controllers
 
         public IActionResult GetRawMaterialsData([FromQuery] RawMaterialFilter filter)
         {
-            var query = _rawMaterialService.GetAll("Category,Unit").AsQueryable();
+            var query = _productService.GetAll("Category,Unit").AsQueryable().Where(x => x.Type == (int)ProductTypes.RawMaterial);
 
             if (!string.IsNullOrWhiteSpace(filter.Name))
                 query = query.Where(x => x.Name != null && x.Name.ToLower().Contains(filter.Name.ToLower()));
@@ -60,6 +60,7 @@ namespace TransLight.Areas.Masters.Controllers
                 .Select(x => new RawMaterialVM()
                 {
                     Id = x.Id,
+                    Type = ProductTypes.RawMaterial,
                     Name = x.Name,
                     Make = x.Make,
                     Pack = x.Pack,
@@ -89,7 +90,7 @@ namespace TransLight.Areas.Masters.Controllers
             RawMaterialVM rawMaterialVM = new();
             if (id == null) return View(rawMaterialVM);
 
-            var rawMaterialData = _rawMaterialService.Get(x => x.Id == id, "Category,Unit");
+            var rawMaterialData = _productService.Get(x => x.Id == id, "Category,Unit");
             if (rawMaterialData == null)
             {
                 return NotFound();
@@ -97,6 +98,7 @@ namespace TransLight.Areas.Masters.Controllers
 
             rawMaterialVM = new()
             {
+                Type = ProductTypes.RawMaterial,
                 Name = rawMaterialData.Name,
                 Make = rawMaterialData.Make,
                 Pack = rawMaterialData.Pack,
@@ -135,9 +137,10 @@ namespace TransLight.Areas.Masters.Controllers
 
             try
             {
-                var rawMaterial = new RawMaterial()
+                var rawMaterial = new Product()
                 {
                     Id = rawMaterialVM.Id ?? Guid.Empty,
+                    Type = (int)ProductTypes.RawMaterial,
                     Name = rawMaterialVM.Name,
                     Make = rawMaterialVM.Make,
                     Pack = rawMaterialVM.Pack,
@@ -153,13 +156,13 @@ namespace TransLight.Areas.Masters.Controllers
                 if (rawMaterialVM.Id == null)
                 {
                     // create
-                    _rawMaterialService.Add(rawMaterial);
+                    _productService.Add(rawMaterial);
                     _logger.LogInformation($"New Raw Material '{rawMaterialVM.Name}' added successfully");
                     TempData["Success"] = "Raw Material saved successfully.";
                 }
                 else
                 {
-                    _rawMaterialService.Update(rawMaterial);
+                    _productService.Update(rawMaterial);
                     _logger.LogInformation($"Raw Material '{rawMaterialVM.Name}' updated successfully");
                     TempData["Success"] = "Raw Material updated successfully.";
                 }

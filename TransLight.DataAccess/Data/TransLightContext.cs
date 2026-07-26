@@ -28,6 +28,8 @@ public partial class TransLightContext : DbContext
 
     public virtual DbSet<PackingMaterial> PackingMaterials { get; set; }
 
+    public virtual DbSet<Product> Products { get; set; }
+
     public virtual DbSet<ProductCategory> ProductCategories { get; set; }
 
     public virtual DbSet<RawMaterial> RawMaterials { get; set; }
@@ -302,6 +304,57 @@ public partial class TransLightContext : DbContext
                 .HasForeignKey(d => d.UnitId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_packing_materials_units");
+        });
+
+        modelBuilder.Entity<Product>(entity =>
+        {
+            entity.ToTable("products");
+
+            entity.HasIndex(e => e.CategoryId, "IX_products_categories");
+
+            entity.HasIndex(e => e.UnitId, "IX_products_units");
+
+            entity.Property(e => e.Id).HasDefaultValueSql("(newsequentialid())");
+            entity.Property(e => e.Active).HasColumnName("active");
+            entity.Property(e => e.CategoryId).HasColumnName("category_id");
+            entity.Property(e => e.Gst)
+                .HasColumnType("decimal(15, 2)")
+                .HasColumnName("gst");
+            entity.Property(e => e.Hsn)
+                .HasMaxLength(255)
+                .HasColumnName("hsn");
+            entity.Property(e => e.Make)
+                .HasMaxLength(255)
+                .HasColumnName("make");
+            entity.Property(e => e.Msl)
+                .HasDefaultValue(0)
+                .HasColumnName("msl");
+            entity.Property(e => e.Name)
+                .HasMaxLength(255)
+                .HasColumnName("name");
+            entity.Property(e => e.Pack)
+                .HasMaxLength(255)
+                .HasColumnName("pack");
+            entity.Property(e => e.Rate)
+                .HasColumnType("decimal(15, 2)")
+                .HasColumnName("rate");
+            entity.Property(e => e.TallyNamePurchase)
+                .HasMaxLength(255)
+                .HasColumnName("tally_name_purchase");
+            entity.Property(e => e.TallyNameSales)
+                .HasMaxLength(255)
+                .HasColumnName("tally_name_sales");
+            entity.Property(e => e.Type).HasColumnName("type");
+            entity.Property(e => e.UnitId).HasColumnName("unit_id");
+
+            entity.HasOne(d => d.Category).WithMany(p => p.Products)
+                .HasForeignKey(d => d.CategoryId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_products_categories");
+
+            entity.HasOne(d => d.Unit).WithMany(p => p.Products)
+                .HasForeignKey(d => d.UnitId)
+                .HasConstraintName("FK_products_units");
         });
 
         modelBuilder.Entity<ProductCategory>(entity =>

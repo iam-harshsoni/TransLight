@@ -13,5 +13,7 @@ public partial class Unit
 
     public virtual ICollection<PackingMaterial> PackingMaterials { get; set; } = new List<PackingMaterial>();
 
+    public virtual ICollection<Product> Products { get; set; } = new List<Product>();
+
     public virtual ICollection<RawMaterial> RawMaterials { get; set; } = new List<RawMaterial>();
 }
