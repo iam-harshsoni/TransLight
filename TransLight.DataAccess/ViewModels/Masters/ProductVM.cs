@@ -12,8 +12,10 @@ namespace TransLight.DataAccess.ViewModels.Masters
         public string? CategoryName { get; set; }
 
         [Required]
-        public string Name { get; set; } = null!;
+        public ProductTypes Type { get; set; }
 
+        [Required]
+        public string Name { get; set; } = null!;
         public string? Make { get; set; }
 
         public string? Pack { get; set; }

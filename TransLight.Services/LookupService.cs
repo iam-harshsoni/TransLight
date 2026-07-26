@@ -15,7 +15,7 @@ namespace TransLight.Services
             var result = countryService.GetAll().Take(500).Select(x => new CountryVM
             {
                 Id = x.Id,
-                Name = x.Name
+                Name = x.Name.ToUpper()
             });
             return result ?? [];
         }
@@ -25,7 +25,7 @@ namespace TransLight.Services
             var result = productCategoryService.GetAll().Take(500).Select(x => new ProductCategoryVM
             {
                 Id = x.Id,
-                Name = x.Name
+                Name = x.Name.ToUpper()
             });
             return result ?? [];
         }
@@ -35,7 +35,7 @@ namespace TransLight.Services
             var result = unitService.GetAll().Take(500).Select(x => new UnitVM
             {
                 Id = x.Id,
-                Name = x.Name
+                Name = x.Code.ToUpper()
             });
             return result ?? [];
         }
