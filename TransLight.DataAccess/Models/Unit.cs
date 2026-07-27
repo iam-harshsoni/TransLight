@@ -11,9 +11,7 @@ public partial class Unit
 
     public string Name { get; set; } = null!;
 
-    public virtual ICollection<PackingMaterial> PackingMaterials { get; set; } = new List<PackingMaterial>();
+    public virtual ICollection<ProductRawMaterial> ProductRawMaterials { get; set; } = new List<ProductRawMaterial>();
 
     public virtual ICollection<Product> Products { get; set; } = new List<Product>();
-
-    public virtual ICollection<RawMaterial> RawMaterials { get; set; } = new List<RawMaterial>();
 }

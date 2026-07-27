@@ -1,4 +1,5 @@
 ﻿using TransLight.DataAccess.ViewModels.Masters;
+using TransLight.Utility.Enums;
 
 namespace TransLight.Services.Interfaces
 {
@@ -7,6 +8,7 @@ namespace TransLight.Services.Interfaces
         Task<IEnumerable<CountryVM>> GetCountriesAsync();
         Task<IEnumerable<ProductCategoryVM>> GetProductCategoriesAsync();
         Task<IEnumerable<UnitVM>> GetUnitsAsync();
+        Task<IEnumerable<ProductVM>> GetProductsByTypeAsync(ProductTypes? type);
 
 
         //Task<IEnumerable<BankVM>> GetBanksAsync();

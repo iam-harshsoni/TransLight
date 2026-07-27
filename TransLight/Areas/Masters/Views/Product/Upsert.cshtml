@@ -1,9 +1,11 @@
-﻿@model ProductVM
+﻿@using TransLight.Utility.Enums
+@model ProductVM
 
 @{
-
 	var categories = (ViewBag.Categories as IEnumerable<ProductCategoryVM>)?.ToList() ?? new List<ProductCategoryVM>();
 	var units = (ViewBag.Units as IEnumerable<UnitVM>)?.ToList() ?? new List<UnitVM>();
+	var rawMaterials = (ViewBag.RawMaterials as IEnumerable<ProductVM>)?.ToList() ?? new List<ProductVM>();
+	var packingMaterials = (ViewBag.PackingMaterials as IEnumerable<ProductVM>)?.ToList() ?? new List<ProductVM>();
 }
 
 <section id="basic-form-layouts">
@@ -118,6 +120,192 @@
 								</div>
 							</div>
 
+							@if (Model.Id != null)
+							{
+								<div id="formApp">
+									<div class="row">
+										<div class="col-md-6">
+											<div class="card">
+												<div class="card-header">
+													<h4 class="card-title" style="display:inline-block;">Raw Materials</h4>
+													<div class="heading-elements">
+														<ul class="list-inline mb-0">
+															<li><a data-action="collapse"><i class="icon-minus4"></i></a></li>
+															<li><a data-action="expand"><i class="icon-expand2"></i></a></li>
+														</ul>
+													</div>
+												</div>
+
+												<div class="card-body collapse in">
+													<div class="table-responsive">
+														<table class="table table-hover mb-0">
+															<thead>
+																<tr>
+																	<th class="text-md-center p-1" width="10">#</th>
+																	<th class="text-md-center text-danger p-1" width="200">Name</th>
+																	<th class="text-md-center p-1" width="50">Qty</th>
+																	<th class="text-md-center p-1" width="100">Unit</th>
+																	<th class="text-md-center p-1" width="20">
+																		<i class="icon-trash4 cursor-pointer" @@click="selectAll.product_raw_materials = !selectAll.product_raw_materials"></i>
+																	</th>
+																</tr>
+															</thead>
+
+															<tbody>
+																<tr v-for="(r, index) in rawMaterials" :key="index">
+																	<td style="padding:5px;" class="text-md-center">
+																		<span class="mt-1">{{ index + 1 }}</span>
+																	</td>
+
+																	<td style="padding:5px">
+																		<input type="hidden" :name="'RawMaterials[' + index + '].Id'" v-model="r.id" />
+																		<input type="hidden" :name="'RawMaterials[' + index + '].ProductId'" v-model="r.productId" />
+																		<input type="hidden" :name="'RawMaterials[' + index + '].Type'" v-model="r.type" />
+
+																		<select class="form-select" v-select2 :name="'RawMaterials[' + index + '].RawMaterialId'" v-model="r.rawMaterialId" required>
+																			<option value="">-- Select Raw Material --</option>
+																			@foreach (var item in rawMaterials)
+																			{
+																				<option value="@item.Id">@item.Name</option>
+																			}
+																		</select>
+																	</td>
+
+																	<td style="padding:5px">
+																		<input type="text" class="form-control text-md-right" :name="'RawMaterials[' + index + '].Qty'" v-model="r.qty" />
+																	</td>
+
+																	<td style="padding:5px">
+																		<input type="hidden" :name="'RawMaterials[' + index + '].Type'" v-model="r.type" />
+
+																		<input type="hidden" :name="'RawMaterials[' + index + '].UnitId'" v-model="r.unitId" />
+
+																		<select class="form-select" v-select2 :name="'RawMaterials[' + index + '].UnitId'" v-model="r.unitId" required>
+																			<option value="">-- Select Unit --</option>
+																			@foreach (var item in units)
+																			{
+																				<option value="@item.Id">@item.Name</option>
+																			}
+																		</select>
+																	</td>
+
+																	<td class="p-0 text-md-center">
+																		<div v-if="r.id != null">
+																			<input type="checkbox" class="mt-1 " v-bind:name="'RawMaterials[' + index + '].IsSelected'" value="true" :checked="selectAll.product_raw_materials" />
+																		</div>
+
+																		<div v-if="r.id == null">
+																			<div style="margin-top: 13px; text-align: center;">
+																				<i class="icon-circle-cross cursor-pointer text-danger" @@click="removeRawMaterialRow(index)"></i>
+																			</div>
+																		</div>
+																			
+																	</td>
+																</tr>
+															</tbody>
+														</table>
+
+														<div class="p-1">
+															<button type="button" class="btn btn-outline-info full-width" v-on:click="addRawMaterialRow"><i class="icon-plus"></i> Add Row </button>
+														</div>
+													</div>
+												</div>
+											</div>
+										</div>
+
+										<div class="col-md-6">
+											<div class="card">
+												<div class="card-header">
+													<h4 class="card-title" style="display:inline-block;">Packing Materials</h4>
+													<div class="heading-elements">
+														<ul class="list-inline mb-0">
+															<li><a data-action="collapse"><i class="icon-minus4"></i></a></li>
+															<li><a data-action="expand"><i class="icon-expand2"></i></a></li>
+														</ul>
+													</div>
+												</div>
+
+												<div class="card-body collapse in">
+													<div class="table-responsive">
+														<table class="table table-hover mb-0">
+															<thead>
+																<tr>
+																	<th class="text-md-center p-1" width="10">#</th>
+																	<th class="text-md-center text-danger p-1" width="200">Name</th>
+																	<th class="text-md-center p-1" width="50">Qty</th>
+																	<th class="text-md-center p-1" width="100">Unit</th>
+																	<th class="text-md-center p-1" width="20">
+																		<i class="icon-trash4 cursor-pointer" @@click="selectAll.product_packing_materials = !selectAll.product_packing_materials"></i>
+																	</th>
+																</tr>
+															</thead>
+
+															<tbody>
+																<tr v-for="(r, index) in packingMaterials" :key="index">
+																	<td style="padding:5px;" class="text-md-center">
+																		<span class="mt-1">{{ index + 1 }}</span>
+																	</td>
+
+																	<td style="padding:5px">
+																		<input type="hidden" :name="'PackingMaterials[' + index + '].Id'" v-model="r.id" />
+																		<input type="hidden" :name="'PackingMaterials[' + index + '].ProductId'" v-model="r.productId" />
+																		<input type="hidden" :name="'PackingMaterials[' + index + '].Type'" v-model="r.type" />
+
+																		<select class="form-select" v-select2 :name="'PackingMaterials[' + index + '].RawMaterialId'" v-model="r.rawMaterialId" required>
+																			<option value="">-- Select Packing Material --</option>
+																			@foreach (var item in packingMaterials)
+																			{
+																				<option value="@item.Id">@item.Name</option>
+																			}
+																		</select>
+																	</td>
+
+																	<td style="padding:5px">
+																		<input type="text" class="form-control text-md-right" :name="'PackingMaterials[' + index + '].Qty'" v-model="r.qty" />
+																	</td>
+
+																	<td style="padding:5px">
+																		<input type="hidden" :name="'PackingMaterials[' + index + '].Type'" v-model="r.type" />
+
+																		<input type="hidden" :name="'PackingMaterials[' + index + '].UnitId'" v-model="r.unitId" />
+
+																		<select class="form-select" v-select2 :name="'PackingMaterials[' + index + '].UnitId'" v-model="r.unitId" required>
+																			<option value="">-- Select Unit --</option>
+																			@foreach (var item in units)
+																			{
+																				<option value="@item.Id">@item.Name</option>
+																			}
+																		</select>
+																	</td>
+
+																	<td class="p-0 text-md-center">
+																		<div v-if="r.id != null">
+																			<input type="checkbox" class="mt-1 " v-bind:name="'PackingMaterials[' + index + '].IsSelected'" value="true" :checked="selectAll.product_packing_materials" />
+																		</div>
+
+																		<div v-if="r.id == null">
+																			<div style="margin-top: 13px; text-align: center;">
+																				<i class="icon-circle-cross cursor-pointer text-danger" @@click="removePackingMaterialRow(index)"></i>
+																			</div>
+																		</div>
+
+																	</td>
+																</tr>
+															</tbody>
+														</table>
+
+														<div class="p-1">
+															<button type="button" class="btn btn-outline-info full-width" v-on:click="addPackingMaterialRow"><i class="icon-plus"></i> Add Row </button>
+														</div>
+													</div>
+												</div>
+											</div>
+										</div>
+
+									</div>
+								</div>
+							}
+
 							<div class="form-actions">
 								<a asp-action="Index" class="btn btn-warning"> <i class="icon-cross2"></i> Cancel</a>
 
@@ -148,5 +336,84 @@
 				width: '100%'
 			});
 		})
+	</script>
+
+	<script>
+		const { createApp } = Vue;
+		const app = createApp({
+			data() {
+				return {
+					selectAll: {
+						product_raw_material: false,
+						product_packing_material: false,
+					},
+					rawMaterials: @Html.Raw(Json.Serialize(
+						Model.RawMaterials.Select(x => new
+						{
+							id = x.Id,
+							productId = x.ProductId,
+							rawMaterialId = x.RawMaterialId,
+							productName = x.RawMaterialName,
+							qty = x.Qty,
+							unitId = x.UnitId,
+							unitName = x.UnitName,
+							type = x.Type.ToString()
+						})
+					)),
+
+					packingMaterials: @Html.Raw(Json.Serialize(
+						Model.PackingMaterials.Select(x => new
+						{
+							id = x.Id,
+							productId = x.ProductId,
+							rawMaterialId = x.RawMaterialId,
+							productName = x.RawMaterialName,
+							qty = x.Qty,
+							unitId = x.UnitId,
+							unit = x.UnitName,
+							type = x.Type.ToString()
+						})
+					))
+				}
+			},
+			methods: {
+				addRawMaterialRow() {
+					this.rawMaterials.push({
+						id: null,
+						productId: @Html.Raw(Json.Serialize(Model.Id)),
+						productName: '',
+						rawMaterialId: '',
+						rawMaterialName: '',
+						unitId:0,
+						unitName:'',
+						qty: 0,
+						type: '@((int)ProductTypes.RawMaterial)'
+					});
+				},
+				removeRawMaterialRow(index) {
+					this.rawMaterials.splice(index, 1);
+				},
+
+				addPackingMaterialRow() {
+					this.packingMaterials.push({
+						id: null,
+						productId: @Html.Raw(Json.Serialize(Model.Id)),
+						productName: '',
+						rawMaterialId: '',
+						rawMaterialName: '',
+						unitId:0,
+						unitName:'',
+						qty: 0,
+						type: '@((int)ProductTypes.PackingMaterial)'
+					});
+				},
+				removePackingMaterialRow(index) {
+					this.packingMaterials.splice(index, 1);
+				},
+			},
+		});
+
+		app.directive('select2', vueSelect2Directive);
+		app.mount('#formApp')
 	</script>
 }

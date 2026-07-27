@@ -23,17 +23,13 @@ namespace TransLight.Areas.Masters.Controllers
 
         public IActionResult GetCountriesData(string? code, string? name, int pageNumber = 1, int pageSize = 10)
         {
-            var query = _countryService.GetAll().AsQueryable();
+            var query = _countryService.GetAll();
 
             if (!string.IsNullOrWhiteSpace(code))
-            {
                 query = query.Where(x => x.Code != null && x.Code.Contains(code, StringComparison.OrdinalIgnoreCase));
-            }
 
             if (!string.IsNullOrWhiteSpace(name))
-            {
                 query = query.Where(x => x.Name != null && x.Name.Contains(name, StringComparison.OrdinalIgnoreCase));
-            }
 
             int totalCounties = query.Count();
 
@@ -63,9 +59,7 @@ namespace TransLight.Areas.Masters.Controllers
 
             var countryData = _countryService.Get(x => x.Id == id);
             if (countryData == null)
-            {
                 return NotFound();
-            }
 
             countryVM = new()
             {
@@ -96,12 +90,16 @@ namespace TransLight.Areas.Masters.Controllers
                 {
                     // create
                     _countryService.Add(country);
+                    _countryService.Save();
+
                     _logger.LogInformation($"New country '{countryVM.Name}' added successfully");
                     TempData["Success"] = "Country saved successfully.";
                 }
                 else
                 {
                     _countryService.Update(country);
+                    _countryService.Save();
+
                     _logger.LogInformation($"Country '{countryVM.Name}' updated successfully");
                     TempData["Success"] = "Country updated successfully.";
                 }

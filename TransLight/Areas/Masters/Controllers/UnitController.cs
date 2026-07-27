@@ -23,7 +23,7 @@ namespace TransLight.Areas.Masters.Controllers
 
         public IActionResult GetUnitsData(string? code, string? name, int pageNumber = 1, int pageSize = 10)
         {
-            var query = _unitService.GetAll().AsQueryable();
+            var query = _unitService.GetAll();
 
             if (!string.IsNullOrWhiteSpace(code))
                 query = query.Where(x => x.Code != null && x.Code.Contains(code, StringComparison.OrdinalIgnoreCase));
@@ -93,12 +93,16 @@ namespace TransLight.Areas.Masters.Controllers
                 {
                     // create
                     _unitService.Add(unit);
+                    _unitService.Save();
+
                     _logger.LogInformation($"New unit '{unitVM.Name}' added successfully");
                     TempData["Success"] = "Unit saved successfully.";
                 }
                 else
                 {
                     _unitService.Update(unit);
+                    _unitService.Save();
+
                     _logger.LogInformation($"Unit '{unitVM.Name}' updated successfully");
                     TempData["Success"] = "Unit updated successfully.";
                 }

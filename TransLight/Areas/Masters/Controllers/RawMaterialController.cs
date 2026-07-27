@@ -29,7 +29,7 @@ namespace TransLight.Areas.Masters.Controllers
 
         public IActionResult GetRawMaterialsData([FromQuery] RawMaterialFilter filter)
         {
-            var query = _productService.GetAll("Category,Unit").AsQueryable().Where(x => x.Type == (int)ProductTypes.RawMaterial);
+            var query = _productService.GetAll("Category,Unit").Where(x => x.Type == (int)ProductTypes.RawMaterial);
 
             if (!string.IsNullOrWhiteSpace(filter.Name))
                 query = query.Where(x => x.Name != null && x.Name.ToLower().Contains(filter.Name.ToLower()));
@@ -157,12 +157,16 @@ namespace TransLight.Areas.Masters.Controllers
                 {
                     // create
                     _productService.Add(rawMaterial);
+                    _productService.Save();
+
                     _logger.LogInformation($"New Raw Material '{rawMaterialVM.Name}' added successfully");
                     TempData["Success"] = "Raw Material saved successfully.";
                 }
                 else
                 {
                     _productService.Update(rawMaterial);
+                    _productService.Save();
+
                     _logger.LogInformation($"Raw Material '{rawMaterialVM.Name}' updated successfully");
                     TempData["Success"] = "Raw Material updated successfully.";
                 }

@@ -19,7 +19,6 @@ namespace TransLight.Services
         public void Add(T entity)
         {
             _db.Add(entity);
-            _db.SaveChanges();
         }
 
         public T Get(Expression<Func<T, bool>> filter, string? includeProperties = null)
@@ -38,7 +37,7 @@ namespace TransLight.Services
 
             return query.FirstOrDefault();
         }
-        public IEnumerable<T> GetAll(string? includeProperties = null)
+        public IQueryable<T> GetAll(string? includeProperties = null)
         {
             IQueryable<T> query = dbset;
 
@@ -51,18 +50,20 @@ namespace TransLight.Services
                 }
             }
 
-            return query.ToList();
+            return query;
         }
 
         public void Remove(T entity)
         {
             dbset.Remove(entity);
-            _db.SaveChanges();
         }
 
         public void RemoveRange(IEnumerable<T> entities)
         {
             dbset.RemoveRange(entities);
+        }
+        public void Save()
+        {
             _db.SaveChanges();
         }
     }

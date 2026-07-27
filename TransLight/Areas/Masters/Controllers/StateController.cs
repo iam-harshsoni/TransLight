@@ -28,7 +28,7 @@ namespace TransLight.Areas.Masters.Controllers
 
         public IActionResult GetStatesData(string? gst, string? code, string? country, string? name, int union_t = -1, int pageNumber = 1, int pageSize = 10)
         {
-            var query = _stateService.GetAll("Country").AsQueryable();
+            var query = _stateService.GetAll("Country");
 
             if (!string.IsNullOrWhiteSpace(gst))
                 query = query.Where(x => x.Gst != null && x.Code.Contains(gst, StringComparison.OrdinalIgnoreCase));
@@ -119,12 +119,16 @@ namespace TransLight.Areas.Masters.Controllers
                 {
                     // create
                     _stateService.Add(state);
+                    _stateService.Save();
+
                     _logger.LogInformation($"New state '{stateVM.Name}' added successfully");
                     TempData["Success"] = "State saved successfully.";
                 }
                 else
                 {
                     _stateService.Update(state);
+                    _stateService.Save();
+
                     _logger.LogInformation($"State '{stateVM.Name}' updated successfully");
                     TempData["Success"] = "State updated successfully.";
                 }

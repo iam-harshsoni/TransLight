@@ -29,7 +29,7 @@ namespace TransLight.Areas.Masters.Controllers
 
         public IActionResult GetPackingMaterialsData([FromQuery] PackingMaterialFilter filter)
         {
-            var query = _productService.GetAll("Category,Unit").AsQueryable().Where(x => x.Type == (int)ProductTypes.PackingMaterial);
+            var query = _productService.GetAll("Category,Unit").Where(x => x.Type == (int)ProductTypes.PackingMaterial);
 
             if (!string.IsNullOrWhiteSpace(filter.Name))
                 query = query.Where(x => x.Name != null && x.Name.ToLower().Contains(filter.Name.ToLower()));
@@ -157,12 +157,16 @@ namespace TransLight.Areas.Masters.Controllers
                 {
                     // create
                     _productService.Add(packingMaterial);
+                    _productService.Save();
+
                     _logger.LogInformation($"New Packing Material '{packingMaterialVM.Name}' added successfully");
                     TempData["Success"] = "Packing Material saved successfully.";
                 }
                 else
                 {
                     _productService.Update(packingMaterial);
+                    _productService.Save();
+
                     _logger.LogInformation($"Packing Material '{packingMaterialVM.Name}' updated successfully");
                     TempData["Success"] = "Packing Material updated successfully.";
                 }

@@ -24,7 +24,7 @@ namespace TransLight.Areas.Masters.Controllers
 
         public IActionResult GetProductCategoriesData(string? name, int active = -1, int pageNumber = 1, int pageSize = 10)
         {
-            var query = _productCategoryService.GetAll().AsQueryable();
+            var query = _productCategoryService.GetAll();
 
             if (!string.IsNullOrWhiteSpace(name))
             {
@@ -98,12 +98,16 @@ namespace TransLight.Areas.Masters.Controllers
                 {
                     // create
                     _productCategoryService.Add(productCategory);
+                    _productCategoryService.Save();
+
                     _logger.LogInformation($"New Category '{productCategoryVM.Name}' added successfully");
                     TempData["Success"] = "Category saved successfully.";
                 }
                 else
                 {
                     _productCategoryService.Update(productCategory);
+                    _productCategoryService.Save();
+
                     _logger.LogInformation($"Category '{productCategoryVM.Name}' updated successfully");
                     TempData["Success"] = "Category updated successfully.";
                 }

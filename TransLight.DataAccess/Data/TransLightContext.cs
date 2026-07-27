@@ -26,13 +26,11 @@ public partial class TransLightContext : DbContext
 
     public virtual DbSet<Currency> Currencies { get; set; }
 
-    public virtual DbSet<PackingMaterial> PackingMaterials { get; set; }
-
     public virtual DbSet<Product> Products { get; set; }
 
     public virtual DbSet<ProductCategory> ProductCategories { get; set; }
 
-    public virtual DbSet<RawMaterial> RawMaterials { get; set; }
+    public virtual DbSet<ProductRawMaterial> ProductRawMaterials { get; set; }
 
     public virtual DbSet<State> States { get; set; }
 
@@ -263,49 +261,6 @@ public partial class TransLightContext : DbContext
                 .HasColumnName("name");
         });
 
-        modelBuilder.Entity<PackingMaterial>(entity =>
-        {
-            entity.ToTable("packing_materials");
-
-            entity.HasIndex(e => e.CategoryId, "IX_packing_materials_categories");
-
-            entity.HasIndex(e => e.UnitId, "IX_packing_materials_units");
-
-            entity.Property(e => e.Id).HasDefaultValueSql("(newsequentialid())");
-            entity.Property(e => e.Active).HasColumnName("active");
-            entity.Property(e => e.CategoryId).HasColumnName("category_id");
-            entity.Property(e => e.Gst)
-                .HasColumnType("decimal(15, 2)")
-                .HasColumnName("gst");
-            entity.Property(e => e.Hsn)
-                .HasMaxLength(255)
-                .HasColumnName("hsn");
-            entity.Property(e => e.Make)
-                .HasMaxLength(255)
-                .HasColumnName("make");
-            entity.Property(e => e.Msl).HasColumnName("msl");
-            entity.Property(e => e.Name)
-                .HasMaxLength(255)
-                .HasColumnName("name");
-            entity.Property(e => e.Pack)
-                .HasMaxLength(255)
-                .HasColumnName("pack");
-            entity.Property(e => e.Rate)
-                .HasColumnType("decimal(15, 2)")
-                .HasColumnName("rate");
-            entity.Property(e => e.UnitId).HasColumnName("unit_id");
-
-            entity.HasOne(d => d.Category).WithMany(p => p.PackingMaterials)
-                .HasForeignKey(d => d.CategoryId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_packing_materials_categories");
-
-            entity.HasOne(d => d.Unit).WithMany(p => p.PackingMaterials)
-                .HasForeignKey(d => d.UnitId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_packing_materials_units");
-        });
-
         modelBuilder.Entity<Product>(entity =>
         {
             entity.ToTable("products");
@@ -370,48 +325,38 @@ public partial class TransLightContext : DbContext
                 .HasColumnName("name");
         });
 
-        modelBuilder.Entity<RawMaterial>(entity =>
+        modelBuilder.Entity<ProductRawMaterial>(entity =>
         {
-            entity.ToTable("raw_materials");
+            entity.ToTable("product_raw_materials");
 
-            entity.HasIndex(e => e.CategoryId, "IX_raw_materials_categories");
+            entity.HasIndex(e => e.ProductId, "IX_product_raw_materials_product_id");
 
-            entity.HasIndex(e => e.UnitId, "IX_raw_materials_units");
+            entity.HasIndex(e => e.RawMaterialId, "IX_product_raw_materials_raw_material_id");
+
+            entity.HasIndex(e => e.UnitId, "IX_product_raw_materials_unit_id");
 
             entity.Property(e => e.Id).HasDefaultValueSql("(newsequentialid())");
-            entity.Property(e => e.Active).HasColumnName("active");
-            entity.Property(e => e.CategoryId).HasColumnName("category_id");
-            entity.Property(e => e.Gst)
+            entity.Property(e => e.ProductId).HasColumnName("product_id");
+            entity.Property(e => e.Qty)
                 .HasColumnType("decimal(15, 2)")
-                .HasColumnName("gst");
-            entity.Property(e => e.Hsn)
-                .HasMaxLength(255)
-                .HasColumnName("hsn");
-            entity.Property(e => e.Make)
-                .HasMaxLength(255)
-                .HasColumnName("make");
-            entity.Property(e => e.Msl)
-                .HasDefaultValue(0)
-                .HasColumnName("msl");
-            entity.Property(e => e.Name)
-                .HasMaxLength(255)
-                .HasColumnName("name");
-            entity.Property(e => e.Pack)
-                .HasMaxLength(255)
-                .HasColumnName("pack");
-            entity.Property(e => e.Rate)
-                .HasColumnType("decimal(15, 2)")
-                .HasColumnName("rate");
+                .HasColumnName("qty");
+            entity.Property(e => e.RawMaterialId).HasColumnName("raw_material_id");
+            entity.Property(e => e.Type).HasColumnName("type");
             entity.Property(e => e.UnitId).HasColumnName("unit_id");
 
-            entity.HasOne(d => d.Category).WithMany(p => p.RawMaterials)
-                .HasForeignKey(d => d.CategoryId)
+            entity.HasOne(d => d.Product).WithMany(p => p.ProductRawMaterialProducts)
+                .HasForeignKey(d => d.ProductId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_raw_materials_categories");
+                .HasConstraintName("FK_product_raw_materials_product");
 
-            entity.HasOne(d => d.Unit).WithMany(p => p.RawMaterials)
+            entity.HasOne(d => d.RawMaterial).WithMany(p => p.ProductRawMaterialRawMaterials)
+                .HasForeignKey(d => d.RawMaterialId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_product_raw_materials_raw_material");
+
+            entity.HasOne(d => d.Unit).WithMany(p => p.ProductRawMaterials)
                 .HasForeignKey(d => d.UnitId)
-                .HasConstraintName("FK_raw_materials_units");
+                .HasConstraintName("FK_product_raw_materials_unit");
         });
 
         modelBuilder.Entity<State>(entity =>

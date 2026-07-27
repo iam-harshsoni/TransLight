@@ -14,12 +14,17 @@ namespace TransLight.Areas.Masters.Controllers
         private readonly ILogger<ProductController> _logger;
         private readonly ILookupService _lookupService;
         private readonly IProductService _productService;
+        private readonly IProductRawMaterialService _productRawMaterialService;
 
-        public ProductController(ILogger<ProductController> logger, IProductService productService, ILookupService lookupService)
+        public ProductController(ILogger<ProductController> logger,
+            IProductService productService,
+            IProductRawMaterialService productRawMaterialService,
+            ILookupService lookupService)
         {
             _logger = logger;
             _productService = productService;
             _lookupService = lookupService;
+            _productRawMaterialService = productRawMaterialService;
         }
 
         public IActionResult Index()
@@ -29,7 +34,7 @@ namespace TransLight.Areas.Masters.Controllers
 
         public IActionResult GetProductsData([FromQuery] ProductFilter filter)
         {
-            var query = _productService.GetAll("Category,Unit").AsQueryable().Where(x => x.Type == (int)ProductTypes.Product);
+            var query = _productService.GetAll("Category,Unit").Where(x => x.Type == (int)ProductTypes.Product);
 
             if (!string.IsNullOrWhiteSpace(filter.Name))
                 query = query.Where(x => x.Name != null && x.Name.ToLower().Contains(filter.Name.ToLower()));
@@ -84,8 +89,7 @@ namespace TransLight.Areas.Masters.Controllers
 
         public async Task<IActionResult> Upsert(Guid? id)
         {
-            ViewBag.Categories = await _lookupService.GetProductCategoriesAsync();
-            ViewBag.Units = await _lookupService.GetUnitsAsync();
+            await LookUps();
 
             ProductVM productVM = new();
             if (id == null) return View(productVM);
@@ -98,6 +102,7 @@ namespace TransLight.Areas.Masters.Controllers
 
             productVM = new()
             {
+                Id = productData.Id,
                 Type = ProductTypes.Product,
                 Name = productData.Name,
                 Make = productData.Make,
@@ -110,6 +115,36 @@ namespace TransLight.Areas.Masters.Controllers
                 CategoryName = productData.Category.Name,
                 UnitId = productData.UnitId,
                 Unit = productData.Unit?.Name,
+
+                RawMaterials = _productRawMaterialService.GetAll()
+                        .Where(x => x.ProductId == id && x.Type == (int)ProductTypes.RawMaterial)
+                        .Select(x => new ProduceRawMaterialsVM
+                        {
+                            Id = x.Id,
+                            ProductId = x.ProductId,
+                            RawMaterialId = x.RawMaterialId,
+                            RawMaterialName = x.RawMaterial.Name,
+                            UnitId = x.UnitId,
+                            UnitName = x.Unit != null ? x.Unit.Name : "",
+                            Qty = x.Qty,
+                            Type = (ProductTypes)x.Type,
+                        })
+                        .ToList(),
+
+                PackingMaterials = _productRawMaterialService.GetAll()
+                        .Where(x => x.ProductId == id && x.Type == (int)ProductTypes.PackingMaterial)
+                        .Select(x => new ProduceRawMaterialsVM
+                        {
+                            Id = x.Id,
+                            ProductId = x.ProductId,
+                            RawMaterialId = x.RawMaterialId,
+                            RawMaterialName = x.RawMaterial.Name,
+                            UnitId = x.UnitId,
+                            UnitName = x.Unit != null ? x.Unit.Name : "",
+                            Qty = x.Qty,
+                            Type = (ProductTypes)x.Type,
+                        })
+                        .ToList(),
             };
 
             return View(productVM);
@@ -117,12 +152,11 @@ namespace TransLight.Areas.Masters.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Upsert(Guid? id, ProductVM productVM)
+        public async Task<IActionResult> Upsert(ProductVM productVM)
         {
             if (!ModelState.IsValid)
             {
-                ViewBag.Categories = await _lookupService.GetProductCategoriesAsync();
-                ViewBag.Units = await _lookupService.GetUnitsAsync();
+                await LookUps();
 
                 var errors = ModelState
                     .Where(x => x.Value?.Errors.Count > 0)
@@ -157,17 +191,71 @@ namespace TransLight.Areas.Masters.Controllers
                 {
                     // create
                     _productService.Add(product);
+                    _productService.Save();
                     _logger.LogInformation($"New Product '{productVM.Name}' added successfully");
                     TempData["Success"] = "Product saved successfully.";
                 }
                 else
                 {
                     _productService.Update(product);
+
+                    #region Add/Update RawMaterials & ProduceMaterials
+                    // Remove All existing RawMaterials and PackingMaterials
+                    var existingMappings = _productRawMaterialService
+                        .GetAll()
+                        .Where(x => x.ProductId == product.Id)
+                        .ToList();
+
+                    if (existingMappings.Any())
+                        _productRawMaterialService.RemoveRange(existingMappings);
+
+                    // Update RawMaterials
+                    if (productVM.RawMaterials.Count > 0)
+                    {
+                        foreach (var item in productVM.RawMaterials)
+                        {
+                            if (!item.IsSelected)
+                            {
+                                var rawMaterials = new ProductRawMaterial
+                                {
+                                    ProductId = item.ProductId,
+                                    RawMaterialId = item.RawMaterialId,
+                                    UnitId = item.UnitId,
+                                    Qty = item.Qty,
+                                    Type = (int)ProductTypes.RawMaterial
+                                };
+                                _productRawMaterialService.Add(rawMaterials);
+                            }
+                        }
+                    }
+
+                    // Update PackingMaterials
+                    if (productVM.PackingMaterials.Count > 0)
+                    {
+                        foreach (var item in productVM.PackingMaterials)
+                        {
+                            if (!item.IsSelected)
+                            {
+                                var packingMaterials = new ProductRawMaterial
+                                {
+                                    ProductId = item.ProductId,
+                                    RawMaterialId = item.RawMaterialId, // packingMaterial Id
+                                    UnitId = item.UnitId,
+                                    Qty = item.Qty,
+                                    Type = (int)ProductTypes.PackingMaterial
+                                };
+                                _productRawMaterialService.Add(packingMaterials);
+                            }
+                        }
+                    }
+                    #endregion
+
+                    _productService.Save();
                     _logger.LogInformation($"Product '{productVM.Name}' updated successfully");
                     TempData["Success"] = "Product updated successfully.";
                 }
-                ViewBag.Categories = await _lookupService.GetProductCategoriesAsync();
-                ViewBag.Units = await _lookupService.GetUnitsAsync();
+
+                await LookUps();
             }
             catch (Exception ex)
             {
@@ -175,7 +263,15 @@ namespace TransLight.Areas.Masters.Controllers
                 TempData["Error"] = "Error saving the Product.";
             }
 
-            return View(productVM);
+            return RedirectToAction(nameof(Upsert), new { id = productVM.Id });
+        }
+
+        private async Task LookUps()
+        {
+            ViewBag.Categories = await _lookupService.GetProductCategoriesAsync();
+            ViewBag.Units = await _lookupService.GetUnitsAsync();
+            ViewBag.RawMaterials = await _lookupService.GetProductsByTypeAsync(ProductTypes.RawMaterial);
+            ViewBag.PackingMaterials = await _lookupService.GetProductsByTypeAsync(ProductTypes.PackingMaterial);
         }
     }
 }

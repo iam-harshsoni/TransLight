@@ -35,5 +35,9 @@ public partial class Product
 
     public virtual ProductCategory Category { get; set; } = null!;
 
+    public virtual ICollection<ProductRawMaterial> ProductRawMaterialProducts { get; set; } = new List<ProductRawMaterial>();
+
+    public virtual ICollection<ProductRawMaterial> ProductRawMaterialRawMaterials { get; set; } = new List<ProductRawMaterial>();
+
     public virtual Unit? Unit { get; set; }
 }

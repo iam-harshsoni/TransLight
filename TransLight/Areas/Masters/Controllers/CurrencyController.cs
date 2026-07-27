@@ -23,17 +23,13 @@ namespace TransLight.Areas.Masters.Controllers
 
         public IActionResult GetCurrenciesData(string? code, string? name, int pageNumber = 1, int pageSize = 10)
         {
-            var query = _currencyService.GetAll().AsQueryable();
+            var query = _currencyService.GetAll();
 
             if (!string.IsNullOrWhiteSpace(code))
-            {
                 query = query.Where(x => x.Code != null && x.Code.Contains(code, StringComparison.OrdinalIgnoreCase));
-            }
 
             if (!string.IsNullOrWhiteSpace(name))
-            {
                 query = query.Where(x => x.Name != null && x.Name.Contains(name, StringComparison.OrdinalIgnoreCase));
-            }
 
             int totalCounties = query.Count();
 
@@ -63,9 +59,7 @@ namespace TransLight.Areas.Masters.Controllers
 
             var currencyData = _currencyService.Get(x => x.Id == id);
             if (currencyData == null)
-            {
                 return NotFound();
-            }
 
             currencyVM = new()
             {
@@ -97,12 +91,16 @@ namespace TransLight.Areas.Masters.Controllers
                 {
                     // create
                     _currencyService.Add(currency);
+                    _currencyService.Save();
+
                     _logger.LogInformation($"New currency '{currencyVM.Name}' added successfully");
                     TempData["Success"] = "Currency saved successfully.";
                 }
                 else
                 {
                     _currencyService.Update(currency);
+                    _currencyService.Save();
+
                     _logger.LogInformation($"Currency '{currencyVM.Name}' updated successfully");
                     TempData["Success"] = "Currency updated successfully.";
                 }

@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using TransLight.DataAccess.Models;
 using TransLight.Utility.Enums;
 
 namespace TransLight.DataAccess.ViewModels.Masters
@@ -38,5 +39,8 @@ namespace TransLight.DataAccess.ViewModels.Masters
         public string? TallyNamePurchase { get; set; }
 
         public YesNo Active { get; set; }
+
+        public ICollection<ProduceRawMaterialsVM> RawMaterials { get; set; } = [];
+        public ICollection<ProduceRawMaterialsVM> PackingMaterials { get; set; } = [];
     }
 }

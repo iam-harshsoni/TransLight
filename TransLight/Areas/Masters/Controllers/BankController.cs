@@ -26,7 +26,7 @@ namespace TransLight.Areas.Masters.Controllers
         [HttpGet]
         public IActionResult GetBanksData(string? name, int pageNumber = 1, int pageSize = 10)
         {
-            var query = _bankService.GetAll().AsQueryable();
+            var query = _bankService.GetAll();
 
             if (!string.IsNullOrWhiteSpace(name))
             {
@@ -93,12 +93,16 @@ namespace TransLight.Areas.Masters.Controllers
                 if (bankVM.Id == null)
                 {
                     _bankService.Add(bank);
+                    _bankService.Save();
+
                     _logger.LogInformation($"New bank '{bankVM.Name}' added successfully");
                     TempData["Success"] = "Bank saved successfully.";
                 }
                 else
                 {
                     _bankService.Update(bank);
+                    _bankService.Save();
+
                     _logger.LogInformation($"Bank '{bankVM.Name}' Updated Successfully");
                     TempData["Success"] = "Bank Updated successfully.";
                 }
