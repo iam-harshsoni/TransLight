@@ -1,0 +1,14 @@
+﻿using System.Linq.Expressions;
+
+namespace TransLight.Services.Interfaces
+{
+    public interface IBaseService<T> where T : class
+    {
+        IQueryable<T> GetAll(string? includeProperties = null);
+        T Get(Expression<Func<T, bool>> filter, string? includeProperties = null);
+        void Add(T entity);
+        void Remove(T entity);
+        void RemoveRange(IEnumerable<T> entities);
+        void Save();
+    }
+}

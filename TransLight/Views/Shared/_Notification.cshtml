@@ -1,0 +1,13 @@
+﻿@if (TempData["Success"] != null)
+{
+    <script>
+        notyf.success('@TempData["Success"]');
+    </script>
+}
+
+@if (TempData["Error"] != null)
+{
+    <script>
+        notyf.error('@TempData["Error"]');
+    </script>
+}
