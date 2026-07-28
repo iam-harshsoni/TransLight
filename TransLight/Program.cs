@@ -44,6 +44,7 @@ builder.Services.AddScoped<ICurrencyService, CurrencyService>();
 builder.Services.AddScoped<IProductCategoryService, ProductCategoryService>();
 builder.Services.AddScoped<IProductService, ProductService>();
 builder.Services.AddScoped<IPackingMaterialService, PackingMaterialServices>();
+builder.Services.AddScoped<IRawMaterialService, RawMaterialServices>();
 builder.Services.AddScoped<IProductRawMaterialService, ProductRawMaterialService>();
 
 var app = builder.Build();
