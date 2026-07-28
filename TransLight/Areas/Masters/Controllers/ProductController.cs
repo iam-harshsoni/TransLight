@@ -77,8 +77,7 @@ namespace TransLight.Areas.Masters.Controllers
 
             TempData["Success"] = result.Message;
 
-            return RedirectToAction(nameof(Upsert),
-                new { id = result.Data });
+            return RedirectToAction(nameof(Upsert), new { id = result.Data });
 
         }
 

@@ -164,7 +164,7 @@ namespace TransLight.Areas.Masters.Controllers
                 }
                 else
                 {
-                    _productService.Update(rawMaterial);
+                    //_productService.Update(rawMaterial);
                     _productService.Save();
 
                     _logger.LogInformation($"Raw Material '{rawMaterialVM.Name}' updated successfully");

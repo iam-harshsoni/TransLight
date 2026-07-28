@@ -14,12 +14,6 @@ namespace TransLight.Services.Masters
     {
         private TransLightContext _db = db;
 
-        public void Update(Product obj)
-        {
-            _db.Products.Update(obj);
-            _db.SaveChanges();
-        }
-
         public async Task<PaginatedResponse<ProductVM>> GetProductAsync(ProductFilter filter)
         {
             var query = _db.Products.AsNoTracking().Include(x => x.Category).Include(x => x.Unit).Where(x => x.Type == (int)ProductTypes.Product);
