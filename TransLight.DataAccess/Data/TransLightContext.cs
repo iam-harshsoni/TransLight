@@ -116,13 +116,16 @@ public partial class TransLightContext : DbContext
                 .HasMaxLength(30)
                 .HasDefaultValueSql("(NULL)")
                 .HasColumnName("cin_no");
-            entity.Property(e => e.CityId).HasColumnName("city_id");
+            entity.Property(e => e.City)
+                .HasMaxLength(255)
+                .HasColumnName("city");
             entity.Property(e => e.Code)
                 .HasMaxLength(5)
                 .IsUnicode(false)
                 .IsFixedLength()
                 .HasColumnName("code");
             entity.Property(e => e.Contact)
+                .HasMaxLength(255)
                 .HasDefaultValueSql("(NULL)")
                 .HasColumnName("contact");
             entity.Property(e => e.EinvoiceAuthToken)
@@ -174,6 +177,7 @@ public partial class TransLightContext : DbContext
                 .HasMaxLength(30)
                 .HasDefaultValueSql("(NULL)")
                 .HasColumnName("pan_no");
+            entity.Property(e => e.Pincode).HasColumnName("pincode");
             entity.Property(e => e.Remarks)
                 .HasMaxLength(255)
                 .HasDefaultValueSql("(NULL)")
@@ -182,6 +186,9 @@ public partial class TransLightContext : DbContext
                 .HasMaxLength(50)
                 .HasDefaultValueSql("(NULL)")
                 .HasColumnName("signature");
+            entity.Property(e => e.State)
+                .HasMaxLength(255)
+                .HasColumnName("state");
             entity.Property(e => e.TallyName)
                 .HasMaxLength(255)
                 .HasDefaultValueSql("(NULL)")
@@ -222,11 +229,6 @@ public partial class TransLightContext : DbContext
                 .HasMaxLength(255)
                 .HasDefaultValueSql("(NULL)")
                 .HasColumnName("website");
-
-            entity.HasOne(d => d.City).WithMany(p => p.Companies)
-                .HasForeignKey(d => d.CityId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_companies_cities");
         });
 
         modelBuilder.Entity<Country>(entity =>

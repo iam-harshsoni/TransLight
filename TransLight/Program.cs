@@ -46,6 +46,7 @@ builder.Services.AddScoped<IProductService, ProductService>();
 builder.Services.AddScoped<IPackingMaterialService, PackingMaterialServices>();
 builder.Services.AddScoped<IRawMaterialService, RawMaterialServices>();
 builder.Services.AddScoped<IProductRawMaterialService, ProductRawMaterialService>();
+builder.Services.AddScoped<ICompanyService, CompanyService>();
 
 var app = builder.Build();
 

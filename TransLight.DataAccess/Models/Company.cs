@@ -13,9 +13,13 @@ public partial class Company
 
     public string Address { get; set; } = null!;
 
-    public Guid CityId { get; set; }
+    public string? City { get; set; }
 
-    public int? Contact { get; set; }
+    public int? Pincode { get; set; }
+
+    public string? State { get; set; }
+
+    public string? Contact { get; set; }
 
     public int? AccountContact { get; set; }
 
@@ -71,17 +75,15 @@ public partial class Company
 
     public string? Signature { get; set; }
 
-    public string EinvoiceUsername { get; set; } = null!;
+    public string? EinvoiceUsername { get; set; }
 
-    public string EinvoicePassword { get; set; } = null!;
+    public string? EinvoicePassword { get; set; }
 
-    public string EinvoiceAuthToken { get; set; } = null!;
+    public string? EinvoiceAuthToken { get; set; }
 
-    public DateTime EinvoiceTokenExpiry { get; set; }
+    public DateTime? EinvoiceTokenExpiry { get; set; }
 
-    public string TermsConditions { get; set; } = null!;
+    public string? TermsConditions { get; set; }
 
-    public string ThemeColor { get; set; } = null!;
-
-    public virtual City City { get; set; } = null!;
+    public string? ThemeColor { get; set; }
 }

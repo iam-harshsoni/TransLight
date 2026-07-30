@@ -15,7 +15,5 @@ public partial class City
 
     public string District { get; set; } = null!;
 
-    public virtual ICollection<Company> Companies { get; set; } = new List<Company>();
-
     public virtual State State { get; set; } = null!;
 }
