@@ -186,6 +186,10 @@ public partial class TransLightContext : DbContext
                 .HasMaxLength(50)
                 .HasDefaultValueSql("(NULL)")
                 .HasColumnName("signature");
+            entity.Property(e => e.Stamp)
+                .HasMaxLength(50)
+                .HasDefaultValueSql("(NULL)")
+                .HasColumnName("stamp");
             entity.Property(e => e.State)
                 .HasMaxLength(255)
                 .HasColumnName("state");

@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.AspNetCore.Http;
+using System.ComponentModel.DataAnnotations;
 
 namespace TransLight.DataAccess.ViewModels.Masters
 {
@@ -71,15 +72,15 @@ namespace TransLight.DataAccess.ViewModels.Masters
 
         public string? Guid { get; set; }
 
-        public string? Logo { get; set; }
+        public IFormFile? Logo { get; set; }
         public string? LogoUrl { get; init; }
         public bool RemoveLogo { get; init; } = false;
 
-        public string? Signature { get; set; }
+        public IFormFile? Signature { get; set; }
         public string? SignatureUrl { get; init; }
         public bool RemoveSignature { get; init; } = false;
 
-        public string? Stamp { get; set; }
+        public IFormFile? Stamp { get; set; }
         public string? StampUrl { get; init; }
         public bool RemoveStamp { get; init; } = false;
 

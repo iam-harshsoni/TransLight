@@ -1,0 +1,51 @@
+﻿@model string
+@{
+	var lowerName = Model.ToLower();
+	var uploadModelId = $"{lowerName}Model";
+	var deleteModelId = $"delete{Model}Model";
+	var removeFieldName = $"Remove{Model}";
+}
+
+<!-- Upload Modal -->
+<div class="modal fade text-xs-left" id="@uploadModelId" role="dialog" tabindex="-1" aria-labelledby="@(uploadModelId)Label" aria-hidden="true">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+					<span aria-hidden="true">&times;</span>
+				</button>
+				<h5 class="modal-title" id="@(uploadModelId)Label">Upload @Model</h5>
+			</div>
+			<div class="modal-body">
+				<input type="file" name="@Model" class="form-control" />
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+				<button type="submit" class="btn btn-primary"><i class="icon-plus"></i> Update</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+<!-- Delete Modal -->
+<div class="modal fade text-xs-left" id="@deleteModelId" role="dialog" tabindex="-1" aria-labelledby="@(deleteModelId)Label" aria-hidden="true">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header bg-danger-subtle">
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+					<span aria-hidden="true">&times;</span>
+				</button>
+				<h5 class="modal-title" id="@(deleteModelId)Label">Confirm Deletion..</h5>
+			</div>
+			<div class="modal-body">
+				<p>Are you sure you want to delete the @lowerName?</p>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-outline-success" data-dismiss="modal"><i class="icon-cross2"></i> No, Dont Delete</button>
+				<button type="submit" name="@removeFieldName" value="true" class="btn btn-outline-danger">
+					<i class="icon-check2"></i> Yes, Delete it!
+				</button>
+			</div>
+		</div>
+	</div>
+</div>

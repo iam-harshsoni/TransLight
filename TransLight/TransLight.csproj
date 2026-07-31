@@ -8,7 +8,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\TransLight.DataAccess\TransLight.DataAccess.csproj" />
-    <ProjectReference Include="..\TransLight.Services\TransLight.Services.csproj" />
     <ProjectReference Include="..\TransLight.Utility\TransLight.Utility.csproj" />
   </ItemGroup>
 
@@ -17,6 +16,7 @@
     <Folder Include="Areas\Dashboard\Models\" />
     <Folder Include="Areas\UserManagement\Data\" />
     <Folder Include="Areas\UserManagement\Models\" />
+    <Folder Include="wwwroot\uploads\company-documents\" />
   </ItemGroup>
 
   <ItemGroup>

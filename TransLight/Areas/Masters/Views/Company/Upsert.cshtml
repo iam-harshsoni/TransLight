@@ -17,58 +17,26 @@
 
 				<form method="post" enctype="multipart/form-data">
 					@Html.AntiForgeryToken()
-					<div class="modal fade text-xs-left" id="logoModel" role="dialog" tabindex="-1" aria-labelledby="logoModelLabel" aria-hidden="true">
+					<input type="hidden" asp-for="Id" />
+					<input type="hidden" asp-for="LogoUrl" />
+					<input type="hidden" asp-for="SignatureUrl" />
+					<input type="hidden" asp-for="StampUrl" />
+
+					<partial name="_ImageUploadModals" model="@("Logo")" />
+					<partial name="_ImageUploadModals" model="@("Signature")" />
+					<partial name="_ImageUploadModals" model="@("Stamp")" />
+				
+					<div class="modal fade text-xs-left" id="companySiteModel" role="dialog" tabindex="-1" aria-labelledby="companySiteModelLabel" aria-hidden="true">
 						<div class="modal-dialog">
 							<div class="modal-content">
 								<div class="modal-header">
 									<button type="button" class="close" data-dismiss="modal" aria-label="Close">
 										<span aria-hidden="true">&times;</span>
 									</button>
-									<h5 class="modal-title" id="logoModelLabel">Upload Logo</h5>
+									<h5 class="modal-title" id="companySiteModelLabel">Company Site Information</h5>
 								</div>
 								<div class="modal-body">
-									<input type="file" name="Logo" class="form-control" />
-								</div>
-								<div class="modal-footer">
-									<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-									<button type="submit" class="btn btn-primary"><i class="icon-plus"></i> Update</button>
-								</div>
-							</div>
-						</div>
-					</div>
-
-					<div class="modal fade text-xs-left" id="deleteLogoModel" role="dialog" tabindex="-1" aria-labelledby="logoModelLabel" aria-hidden="true">
-						<div class="modal-dialog">
-							<div class="modal-content">
-								<div class="modal-header bg-danger-subtle">
-									<button type="button" class="close" data-dismiss="modal" aria-label="Close">
-										<span aria-hidden="true">&times;</span>
-									</button>
-									<h5 class="modal-title" id="deleteLogoModelLabel">Confirm Deletion..</h5>
-								</div>
-								<div class="modal-body">
-									<p>Are you sure you want to delete the logo?</p>
-									<input type="hidden" asp-for="RemoveLogo" />
-								</div>
-								<div class="modal-footer">
-									<button type="button" class="btn btn-outline-success" data-dismiss="modal"><i class="icon-cross2"></i> No, Dont Delete</button>
-									<button type="submit" class="btn btn-outline-danger" id="removeLogoBtn"><i class="icon-check2"></i> Yes, Delete it!</button>
-								</div>
-							</div>
-						</div>
-					</div>
-
-					<div class="modal fade text-xs-left" id="signatureModel" role="dialog" tabindex="-1" aria-labelledby="logoModelLabel" aria-hidden="true">
-						<div class="modal-dialog">
-							<div class="modal-content">
-								<div class="modal-header">
-									<button type="button" class="close" data-dismiss="modal" aria-label="Close">
-										<span aria-hidden="true">&times;</span>
-									</button>
-									<h5 class="modal-title" id="signatureModelLabel">Upload Signature</h5>
-								</div>
-								<div class="modal-body">
-									<input type="file" name="Signature" class="form-control" />
+									
 								</div>
 								<div class="modal-footer">
 									<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
@@ -78,68 +46,7 @@
 						</div>
 					</div>
 
-					<div class="modal fade text-xs-left" id="deleteSignatureModel" role="dialog" tabindex="-1" aria-labelledby="logoModelLabel" aria-hidden="true">
-						<div class="modal-dialog">
-							<div class="modal-content">
-								<div class="modal-header bg-danger-subtle">
-									<button type="button" class="close" data-dismiss="modal" aria-label="Close">
-										<span aria-hidden="true">&times;</span>
-									</button>
-									<h5 class="modal-title" id="deleteSignatureModelLabel">Confirm Deletion..</h5>
-								</div>
-								<div class="modal-body">
-									<p>Are you sure you want to delete the signature?</p>
-									<input type="hidden" asp-for="RemoveSignature" />
-								</div>
-								<div class="modal-footer">
-									<button type="button" class="btn btn-outline-success" data-dismiss="modal"><i class="icon-cross2"></i>No, Dont Delete</button>
-									<button type="submit" class="btn btn-outline-danger" id="removeSignBtn"><i class="icon-check2"></i>Yes, Delete it!</button>
-								</div>
-							</div>
-						</div>
-					</div>
 
-					<div class="modal fade text-xs-left" id="stampModel" role="dialog" tabindex="-1" aria-labelledby="stampModelLabel" aria-hidden="true">
-						<div class="modal-dialog">
-							<div class="modal-content">
-								<div class="modal-header">
-									<button type="button" class="close" data-dismiss="modal" aria-label="Close">
-										<span aria-hidden="true">&times;</span>
-									</button>
-									<h5 class="modal-title" id="stampModelLabel">Upload Stamp</h5>
-								</div>
-								<div class="modal-body">
-									<input type="file" name="Stamp" class="form-control" />
-								</div>
-								<div class="modal-footer">
-									<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-									<button type="submit" class="btn btn-primary"><i class="icon-plus"></i> Update</button>
-								</div>
-							</div>
-						</div>
-					</div>
-
-					<div class="modal fade text-xs-left" id="deleteStampModel" role="dialog" tabindex="-1" aria-labelledby="stampModelLabel" aria-hidden="true">
-						<div class="modal-dialog">
-							<div class="modal-content">
-								<div class="modal-header bg-danger-subtle">
-									<button type="button" class="close" data-dismiss="modal" aria-label="Close">
-										<span aria-hidden="true">&times;</span>
-									</button>
-									<h5 class="modal-title" id="deleteStampModelLabel">Confirm Deletion..</h5>
-								</div>
-								<div class="modal-body">
-									<p>Are you sure you want to delete the stamp?</p>
-									<input type="hidden" asp-for="RemoveStamp" />
-								</div>
-								<div class="modal-footer">
-									<button type="button" class="btn btn-outline-success" data-dismiss="modal"><i class="icon-cross2"></i> No, Dont Delete</button>
-									<button type="submit" class="btn btn-outline-danger" id="removeStampBtn"><i class="icon-check2"></i> Yes, Delete it!</button>
-								</div>
-							</div>
-						</div>
-					</div>
-				
 					<div class="card-body collapse in">
 						<div class="card-block">
 							<div class="form-body">
@@ -148,7 +55,6 @@
 										<div class="row">
 											<div class="col-md-3">
 												<div class="form-group">
-													<input type="hidden" asp-for="Id" />
 													<label> Code <span class="text-danger">*</span></label>
 													<input asp-for="Code" class="form-control" placeholder="Code" required />
 												</div>
@@ -255,73 +161,100 @@
 												</div>
 											</div>
 										</div>
-
 									</div>
 
 									@if (Model.Id.HasValue)
 									{
-										<div class="col-md-4">															
+										<div class="col-md-4">
 											<div class="card mb-4">
 												<div class="card-header">
-													<h4 class="card-title" style="display:inline-block;">Logo</h4>
+													<h4 class="card-title" style="display:inline-block;">Company Sites</h4>
 													<div class="heading-elements">
 														<ul class="list-inline mb-0">
-															<li><a style="font-size: 20px" data-toggle="modal" data-target="#logoModel"><i class="icon-plus-circled"></i></a></li>
-															<li><a style="font-size: 20px" data-toggle="modal" data-target="#deleteLogoModel"><i class="icon-minus"></i></a></li>
+															<li><a style="font-size: 20px" data-toggle="modal" data-target="#companySiteModel"><i class="icon-plus-circled"></i></a></li>
 														</ul>
 													</div>
 												</div>
 
-												@if (Model.LogoUrl?.Length > 0)
-												{
-													<div class="card-body p-3" id="">
-														<img src="@Model.LogoUrl" id="logoPreview" class="img-fluid" />
-													</div>
-												}
-                                
+												<div class="card-body p-3" id="">
+												</div>
+
 											</div>
-
-											<div class="card mb-4">
-												<div class="card-header">
-													<h4 class="card-title" style="display:inline-block;">Signature</h4>
-													<div class="heading-elements">
-														<ul class="list-inline mb-0">
-															<li><a style="font-size: 20px" data-toggle="modal" data-target="#signatureModel"><i class="icon-plus-circled"></i></a></li>
-															<li><a style="font-size: 20px" data-toggle="modal" data-target="#deleteSignatureModel"><i class="icon-minus"></i></a></li>
-														</ul>
-													</div>
-												</div>
-
-												@if (Model.SignatureUrl?.Length > 0)
-												{
-													<div class="card-body p-3" id="">
-														<img src="@Model.SignatureUrl" id="signPreview" class="img-fluid" />
-													</div>
-												}
-												</div>
-
-											<div class="card mb-4">
-												<div class="card-header">
-													<h4 class="card-title" style="display:inline-block;">Stamp</h4>
-													<div class="heading-elements">
-														<ul class="list-inline mb-0">
-															<li><a style="font-size: 20px" data-toggle="modal" data-target="#stampModel"><i class="icon-plus-circled"></i></a></li>
-															<li><a style="font-size: 20px" data-toggle="modal" data-target="#deleteStampModel"><i class="icon-minus"></i></a></li>
-														</ul>
-													</div>
-												</div>
-
-												@if (Model.StampUrl?.Length > 0)
-												{
-													<div class="card-body p-3" id="">
-														<img src="@Model.SignatureUrl" id="signPreview" class="img-fluid" />
-													</div>
-												}
-												</div>
 										</div>
 									}
-										
+
 								</div>
+							</div>
+
+							<div class="row">
+								@if (Model.Id.HasValue)
+								{
+									<div class="col-md-4">
+										<div class="card mb-4">
+											<div class="card-header">
+												<h4 class="card-title" style="display:inline-block;">Logo</h4>
+												<div class="heading-elements">
+													<ul class="list-inline mb-0">
+														<li><a style="font-size: 20px" data-toggle="modal" data-target="#logoModel"><i class="icon-plus-circled"></i></a></li>
+														<li><a style="font-size: 20px" data-toggle="modal" data-target="#deleteLogoModel"><i class="icon-minus"></i></a></li>
+													</ul>
+												</div>
+											</div>
+
+											@if (Model.LogoUrl?.Length > 0)
+											{
+												<div class="card-body p-3" id="">
+													<img src="@Model.LogoUrl" id="logoPreview" class="img-fluid" />
+												</div>
+											}
+
+										</div>
+									</div>
+
+									<div class="col-md-4">
+										<div class="card mb-4">
+											<div class="card-header">
+												<h4 class="card-title" style="display:inline-block;">Signature</h4>
+												<div class="heading-elements">
+													<ul class="list-inline mb-0">
+														<li><a style="font-size: 20px" data-toggle="modal" data-target="#signatureModel"><i class="icon-plus-circled"></i></a></li>
+														<li><a style="font-size: 20px" data-toggle="modal" data-target="#deleteSignatureModel"><i class="icon-minus"></i></a></li>
+													</ul>
+												</div>
+											</div>
+
+											@if (Model.SignatureUrl?.Length > 0)
+											{
+												<div class="card-body p-3" id="">
+													<img src="@Model.SignatureUrl" id="signPreview" class="img-fluid" />
+												</div>
+											}
+										</div>
+
+									</div>
+
+									<div class="col-md-4">
+										<div class="card mb-4">
+											<div class="card-header">
+												<h4 class="card-title" style="display:inline-block;">Stamp</h4>
+												<div class="heading-elements">
+													<ul class="list-inline mb-0">
+														<li><a style="font-size: 20px" data-toggle="modal" data-target="#stampModel"><i class="icon-plus-circled"></i></a></li>
+														<li><a style="font-size: 20px" data-toggle="modal" data-target="#deleteStampModel"><i class="icon-minus"></i></a></li>
+													</ul>
+												</div>
+											</div>
+
+											@if (Model.StampUrl?.Length > 0)
+											{
+												<div class="card-body p-3" id="">
+													<img src="@Model.StampUrl" id="stampPreview" class="img-fluid" />
+												</div>
+											}
+										</div>
+
+									</div>
+								}
 							</div>
 
 							<div class="form-actions">

@@ -36,6 +36,7 @@ builder.Services.ConfigureApplicationCookie(options =>
 
 builder.Services.AddScoped<ILookupService, LookupService>();
 
+// Master Services
 builder.Services.AddScoped<IBankService, BankService>();
 builder.Services.AddScoped<ICountryService, CountryService>();
 builder.Services.AddScoped<IStateService, StateService>();
@@ -47,6 +48,9 @@ builder.Services.AddScoped<IPackingMaterialService, PackingMaterialServices>();
 builder.Services.AddScoped<IRawMaterialService, RawMaterialServices>();
 builder.Services.AddScoped<IProductRawMaterialService, ProductRawMaterialService>();
 builder.Services.AddScoped<ICompanyService, CompanyService>();
+
+// File Upload Service
+builder.Services.AddScoped<IStorageService, LocalStorageService>();
 
 var app = builder.Build();
 

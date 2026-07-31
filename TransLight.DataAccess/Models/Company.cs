@@ -75,6 +75,8 @@ public partial class Company
 
     public string? Signature { get; set; }
 
+    public string? Stamp { get; set; }
+
     public string? EinvoiceUsername { get; set; }
 
     public string? EinvoicePassword { get; set; }
