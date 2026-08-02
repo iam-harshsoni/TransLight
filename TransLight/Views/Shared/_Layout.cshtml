@@ -1,4 +1,10 @@
-﻿@{
+﻿@using Microsoft.AspNetCore.Http;
+
+@{
+    var selectedCompanyId = Context.Session.GetString("CompanyId");
+}
+
+@{
     var area = ViewContext.RouteData.Values["area"]?.ToString();
     var controller = ViewContext.RouteData.Values["controller"]?.ToString();
     var action = ViewContext.RouteData.Values["action"]?.ToString();
@@ -61,11 +67,11 @@
             </div>
             <div class="navbar-container content container-fluid">
                 <div id="navbar-mobile" class="collapse navbar-toggleable-sm">
-                   
                     <ul class="nav navbar-nav">
                         <li class="nav-item hidden-sm-down"><a class="nav-link nav-menu-main menu-toggle hidden-xs"><i class="icon-menu5"></i></a></li>
                     </ul>
                     <ul class="nav navbar-nav float-xs-right">
+                        @await Component.InvokeAsync("CompanySelector")
                         @if (User.Identity?.IsAuthenticated == true)
                         {
                             <li class="dropdown dropdown-user nav-item">
@@ -211,6 +217,32 @@
                 x: 'center',
                 y: 'top'
             }
+        });
+    </script>
+
+    <script>
+        $(function() {
+
+            $(".company-item").on("click", function(e) {
+                e.preventDefault();
+
+                var companyId = $(this).data("company-id");
+                var companyName = $(this).data("company-name");
+
+                $(".selected-company").text(companyName);
+
+                $.ajax({
+                    url: "/Masters/Company/SetCompany",
+                    type: "POST",
+                    data: {
+                        companyId: companyId
+                    },
+                    success: function() {
+                        location.reload();
+                    }
+                });
+            });
+
         });
     </script>
     <partial name="_Notification" />

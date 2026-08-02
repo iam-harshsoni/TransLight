@@ -39,6 +39,15 @@ builder.Services.AddAntiforgery(options =>
     options.HeaderName = "RequestVerificationToken";
 });
 
+builder.Services.AddSession(options =>
+{
+    options.IdleTimeout = TimeSpan.FromHours(8);
+    options.Cookie.HttpOnly = true;
+    options.Cookie.IsEssential = true;
+});
+
+builder.Services.AddHttpContextAccessor();
+
 builder.Services.AddScoped<ILookupService, LookupService>();
 
 // Master Services
@@ -85,7 +94,12 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
+app.UseAuthentication();
+
+app.UseSession();
+
 app.UseAuthorization();
+
 
 app.MapControllerRoute(
     name: "areas",

@@ -1,0 +1,25 @@
+﻿@using TransLight.DataAccess.ViewModels.Dashboard
+@model CompanySelectorVM
+
+@{
+    var selectedCompany = Model.Companies.FirstOrDefault(c => c.Id.ToString() == Model.SelectedCompanyId);
+}
+
+<li class="dropdown dropdown-company nav-item">
+    <a id="dropdown-company" href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="dropdown-toggle nav-link">
+        <i class="fa fa-building"></i>
+        <span class="selected-company">
+            @(selectedCompany?.Name ?? "Select Company")
+        </span>
+    </a>
+
+    <div aria-labelledby="dropdown-company" class="dropdown-menu">
+        @foreach (var company in Model.Companies)
+        {
+            <a href="#" class="dropdown-item company-item" data-company-id="@company.Id" data-company-name="@company.Name">
+                <i class="fa fa-building"></i>
+                @company.Name
+            </a>
+        }
+    </div>
+</li>

@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using TransLight.Common;
 using TransLight.DataAccess.Filters.Masters;
 using TransLight.DataAccess.ViewModels.Masters;
 using TransLight.Services.Interfaces.Masters;
@@ -22,6 +23,10 @@ namespace TransLight.Areas.Masters.Controllers
 
         public IActionResult Index()
         {
+            Guid? companyId = HttpContext.Session.GetCompanyId();
+
+            Console.WriteLine(companyId);
+
             return View();
         }
 
@@ -67,6 +72,13 @@ namespace TransLight.Areas.Masters.Controllers
             TempData["Success"] = result.Message;
 
             return RedirectToAction(nameof(Upsert), new { id = result.Data });
+        }
+
+        [HttpPost]
+        public IActionResult SetCompany(Guid companyId)
+        {
+            HttpContext.Session.SetCompanyId(companyId);
+            return Ok();
         }
     }
 }
