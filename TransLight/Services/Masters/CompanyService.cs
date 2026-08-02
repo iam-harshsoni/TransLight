@@ -46,8 +46,8 @@ namespace TransLight.Services.Masters
                 .Select(x => new CompanyVM()
                 {
                     Id = x.Id,
-                    Code = x.Code,
-                    Name = x.Name,
+                    Code = x.Code.Trim(),
+                    Name = x.Name.Trim(),
                     Address = x.Address,
                     Contact = x.Contact,
                     Email = x.Email,
@@ -78,9 +78,9 @@ namespace TransLight.Services.Masters
             var companyVM = new CompanyVM()
             {
                 Id = companyData.Id,
-                Code = companyData.Code,
-                Name = companyData.Name,
-                Address = companyData.Address,
+                Code = companyData.Code.Trim(),
+                Name = companyData.Name.Trim(),
+                Address = companyData.Address.Trim(),
                 City = companyData.City,
                 Pincode = companyData.Pincode,
                 Contact = companyData.Contact,

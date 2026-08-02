@@ -1,0 +1,122 @@
+﻿<div class="modal fade text-xs-left" id="companySiteModel" role="dialog" tabindex="-1" aria-labelledby="companySiteLabel" aria-hidden="true">
+	<div class="modal-dialog" style="max-width:1100px">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+					<span aria-hidden="true">&times;</span>
+				</button>
+				<h5 class="modal-title" id="companySiteLabel">Company Site Info</h5>
+			</div>
+			<div class="modal-body">
+				<div class="row">
+					<div class="col-md-12">
+						<div class="row">
+							<div class="col-md-3">
+								<div class="form-group">
+									<label> Site Code <span class="text-danger">*</span></label>
+									<input v-model="siteForm.code" class="form-control" placeholder="Code" />
+								</div>
+							</div>
+							<div class="col-md-9">
+								<div class="form-group">
+									<label> Site Name <span class="text-danger">*</span></label>
+									<input v-model="siteForm.name" class="form-control" placeholder="Name" />
+								</div>
+							</div>
+						</div>
+
+						<div class="row">
+							<div class="col-md-12">
+								<div class="form-group">
+									<label> Address <span class="text-danger">*</span></label>
+									<textarea v-model="siteForm.address" class="form-control" placeholder="Address"> </textarea>
+								</div>
+							</div>
+						</div>
+
+						<div class="row">
+							<div class="col-md-3">
+								<div class="form-group">
+									<label> City</label>
+									<input v-model="siteForm.city" class="form-control" placeholder="City" />
+								</div>
+							</div>
+							<div class="col-md-3">
+								<div class="form-group">
+									<label> Pincode</label>
+									<input v-model="siteForm.pincode" class="form-control" placeholder="Pincode" />
+								</div>
+							</div>
+							<div class="col-md-3">
+								<div class="form-group">
+									<label> Contact</label>
+									<input v-model="siteForm.contact" class="form-control" placeholder="Contact" />
+								</div>
+							</div>
+							<div class="col-md-3">
+								<div class="form-group">
+									<label> Email</label>
+									<input v-model="siteForm.email" class="form-control" placeholder="Email" />
+								</div>
+							</div>
+						</div>
+
+						<div class="row">
+							<div class="col-md-4">
+								<div class="form-group">
+									<label> GST No</label>
+									<input v-model="siteForm.gstNo" class="form-control" placeholder="GST No" />
+								</div>
+							</div>
+							<div class="col-md-4">
+								<div class="form-group">
+									<label> LUT No</label>
+									<input v-model="siteForm.lutNo" class="form-control" placeholder="LUT No" />
+								</div>
+							</div>
+							<div class="col-md-4">
+								<div class="form-group">
+									<label> E-Invoice Username</label>
+									<input v-model="siteForm.einvoiceUsername" class="form-control" />
+								</div>
+							</div>
+						</div>
+
+						<div class="row">
+							<div class="col-md-4">
+								<div class="form-group">
+									<label> E-way Username</label>
+									<input v-model="siteForm.ewayUsername" class="form-control" />
+								</div>
+							</div>
+							<div class="col-md-4">
+								<div class="form-group">
+									<label> E-way Password</label>
+									<input v-model="siteForm.ewayPassword" class="form-control" />
+								</div>
+							</div>
+							<div class="col-md-4">
+								<div class="form-group">
+									<label>Active<span class="text-danger">*</span></label>
+									<select class="form-control" v-model="siteForm.active">
+										<option value="Yes">Yes</option>
+										<option value="No">No</option>
+									</select>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="modal-footer">
+				<button type="button" data-dismiss="modal" class="btn btn-warning">
+					<i class="icon-cross2"></i> Cancel
+				</button>
+				<!-- Changed to type="button" and added Vue click handler -->
+				<button type="button" @@click ="UpsertCompanySite" class="btn btn-primary ml-1">
+					<i class="icon-check2"></i> Save
+				</button>
+			</div>
+		</div>
+	</div>
+</div>

@@ -88,4 +88,6 @@ public partial class Company
     public string? TermsConditions { get; set; }
 
     public string? ThemeColor { get; set; }
+
+    public virtual ICollection<CompanySite> CompanySites { get; set; } = new List<CompanySite>();
 }

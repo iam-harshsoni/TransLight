@@ -22,6 +22,8 @@ public partial class TransLightContext : DbContext
 
     public virtual DbSet<Company> Companies { get; set; }
 
+    public virtual DbSet<CompanySite> CompanySites { get; set; }
+
     public virtual DbSet<Country> Countries { get; set; }
 
     public virtual DbSet<Currency> Currencies { get; set; }
@@ -37,7 +39,8 @@ public partial class TransLightContext : DbContext
     public virtual DbSet<Unit> Units { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        => optionsBuilder.UseSqlServer("Name=ConnectionStrings:DefaultConnection");
+#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
+        => optionsBuilder.UseSqlServer("Data Source=localhost\\SQLEXPRESS03;Initial Catalog=TransLight;Integrated Security=True;Trust Server Certificate=True");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -233,6 +236,62 @@ public partial class TransLightContext : DbContext
                 .HasMaxLength(255)
                 .HasDefaultValueSql("(NULL)")
                 .HasColumnName("website");
+        });
+
+        modelBuilder.Entity<CompanySite>(entity =>
+        {
+            entity.ToTable("company_sites");
+
+            entity.HasIndex(e => e.CompanyId, "IX_company_sites_companies");
+
+            entity.Property(e => e.Id).HasDefaultValueSql("(newsequentialid())");
+            entity.Property(e => e.Active).HasColumnName("active");
+            entity.Property(e => e.Address)
+                .HasMaxLength(255)
+                .HasColumnName("address");
+            entity.Property(e => e.City)
+                .HasMaxLength(255)
+                .HasColumnName("city");
+            entity.Property(e => e.Code)
+                .HasMaxLength(5)
+                .IsUnicode(false)
+                .IsFixedLength()
+                .HasColumnName("code");
+            entity.Property(e => e.CompanyId).HasColumnName("company_id");
+            entity.Property(e => e.Contact)
+                .HasMaxLength(255)
+                .HasDefaultValueSql("(NULL)")
+                .HasColumnName("contact");
+            entity.Property(e => e.EinvoiceUsername)
+                .HasMaxLength(50)
+                .HasColumnName("einvoice_username");
+            entity.Property(e => e.Email)
+                .HasMaxLength(255)
+                .HasDefaultValueSql("(NULL)")
+                .HasColumnName("email");
+            entity.Property(e => e.EwayPassword)
+                .HasMaxLength(50)
+                .HasColumnName("eway_password");
+            entity.Property(e => e.EwayUsername)
+                .HasMaxLength(50)
+                .HasColumnName("eway_username");
+            entity.Property(e => e.GstNo)
+                .HasMaxLength(30)
+                .HasDefaultValueSql("(NULL)")
+                .HasColumnName("gst_no");
+            entity.Property(e => e.LutNo)
+                .HasMaxLength(30)
+                .HasDefaultValueSql("(NULL)")
+                .HasColumnName("lut_no");
+            entity.Property(e => e.Name)
+                .HasMaxLength(255)
+                .HasColumnName("name");
+            entity.Property(e => e.Pincode).HasColumnName("pincode");
+
+            entity.HasOne(d => d.Company).WithMany(p => p.CompanySites)
+                .HasForeignKey(d => d.CompanyId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_company_sites_companies");
         });
 
         modelBuilder.Entity<Country>(entity =>

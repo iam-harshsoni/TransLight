@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿
+using Microsoft.EntityFrameworkCore;
 using TransLight.DataAccess.Common;
 using TransLight.DataAccess.Data;
 using TransLight.DataAccess.Filters.Masters;
@@ -98,6 +99,7 @@ namespace TransLight.Services.Masters
                 CategoryName = productData.Category.Name,
                 UnitId = productData.UnitId,
                 Unit = productData.Unit?.Name,
+                Active = (YesNo)productData.Active,
 
                 RawMaterials = _db.ProductRawMaterials
                     .AsNoTracking()

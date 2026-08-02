@@ -9,12 +9,15 @@ namespace TransLight.Areas.Masters.Controllers
     {
         private readonly ILogger<CompanyController> _logger;
         private readonly ICompanyService _companyService;
+        private readonly ICompanySitesService _companySitesService;
 
         public CompanyController(ILogger<CompanyController> logger,
-           ICompanyService companyService)
+           ICompanyService companyService,
+            ICompanySitesService companySitesService)
         {
             _logger = logger;
             _companyService = companyService;
+            _companySitesService = companySitesService;
         }
 
         public IActionResult Index()

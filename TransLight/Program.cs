@@ -34,6 +34,11 @@ builder.Services.ConfigureApplicationCookie(options =>
     options.AccessDeniedPath = "/UserManagement/Account/AccessDenied";
 });
 
+builder.Services.AddAntiforgery(options =>
+{
+    options.HeaderName = "RequestVerificationToken";
+});
+
 builder.Services.AddScoped<ILookupService, LookupService>();
 
 // Master Services
@@ -48,6 +53,7 @@ builder.Services.AddScoped<IPackingMaterialService, PackingMaterialServices>();
 builder.Services.AddScoped<IRawMaterialService, RawMaterialServices>();
 builder.Services.AddScoped<IProductRawMaterialService, ProductRawMaterialService>();
 builder.Services.AddScoped<ICompanyService, CompanyService>();
+builder.Services.AddScoped<ICompanySitesService, CompanySiteService>();
 
 // File Upload Service
 builder.Services.AddScoped<IStorageService, LocalStorageService>();
