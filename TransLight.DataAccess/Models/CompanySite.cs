@@ -36,4 +36,6 @@ public partial class CompanySite
     public int Active { get; set; }
 
     public virtual Company Company { get; set; } = null!;
+
+    public virtual ICollection<Transaction> Transactions { get; set; } = new List<Transaction>();
 }

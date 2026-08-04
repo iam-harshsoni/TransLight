@@ -1,5 +1,4 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using TransLight.DataAccess.Models;
 using TransLight.Utility.Enums;
 
 namespace TransLight.DataAccess.ViewModels.Masters
@@ -9,14 +8,14 @@ namespace TransLight.DataAccess.ViewModels.Masters
         public Guid? Id { get; set; }
 
         [Required]
-        public Guid CategoryId { get; set; }
+        public Guid CategoryId { get; set; } = Guid.Empty;
         public string? CategoryName { get; set; }
 
         [Required]
         public ProductTypes Type { get; set; }
 
         [Required]
-        public string Name { get; set; } = null!;
+        public string Name { get; set; } = string.Empty;
         public string? Make { get; set; }
 
         public string? Pack { get; set; }
@@ -30,7 +29,7 @@ namespace TransLight.DataAccess.ViewModels.Masters
         public decimal Gst { get; set; }
 
         [Required]
-        public string Hsn { get; set; } = null!;
+        public string Hsn { get; set; } = string.Empty;
 
         public int? Msl { get; set; }
 

@@ -15,26 +15,23 @@
                     <table class="table table-hover mb-0">
                         <thead>
                             <tr>
-                                <th>Code</th>
-                                <th>GST</th>
-                                <th>Name</th>
-                                <th>Union Territory</th>
-                                <th>Country</th>
+                                <th style="text-align:center">Code</th>
+                                <th style="text-align:center">GST</th>
+                                <th style="text-align:center">Name</th>
+                                <th style="text-align:center">Union Territory</th>
+                                <th style="text-align:center">Country</th>
                             </tr>
                             <tr>
                                 <td class="p-1">
-                                    <input type="text" class="form-control" placeholder="code..."
-                                           v-model="search.code" />
+                                    <input type="text" class="form-control" placeholder="code..." v-model="search.code" />
                                 </td>
                                 
                                 <td class="p-1">
-                                    <input type="text" class="form-control" placeholder="gst..."
-                                           v-model="search.gst" />
+                                    <input type="text" class="form-control" placeholder="gst..." v-model="search.gst" />
                                 </td>
 
                                 <td class="p-1">
-                                    <input type="text" class="form-control" placeholder="name..."
-                                           v-model="search.name" />
+                                    <input type="text" class="form-control" placeholder="name..." v-model="search.name" />
                                 </td>
 
                                 <td class="p-1">
@@ -62,7 +59,7 @@
                                 <td>{{ item.countryName}}</td>
                             </tr>
                             <tr v-if="items.length === 0 && !loading">
-                                <td colspan="2" class="text-center text-muted py-3">No matching states found.</td>
+                                <td colspan="5" class="text-center text-muted py-3">No matching states found.</td>
                             </tr>
                         </tbody>
                     </table>

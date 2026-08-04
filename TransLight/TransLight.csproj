@@ -14,6 +14,8 @@
   <ItemGroup>
     <Folder Include="Areas\Dashboard\Data\" />
     <Folder Include="Areas\Dashboard\Models\" />
+    <Folder Include="Areas\Store\Data\" />
+    <Folder Include="Areas\Store\Models\" />
     <Folder Include="Areas\UserManagement\Data\" />
     <Folder Include="Areas\UserManagement\Models\" />
     <Folder Include="wwwroot\uploads\company-documents\" />

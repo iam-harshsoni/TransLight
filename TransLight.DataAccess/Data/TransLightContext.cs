@@ -36,11 +36,12 @@ public partial class TransLightContext : DbContext
 
     public virtual DbSet<State> States { get; set; }
 
+    public virtual DbSet<Transaction> Transactions { get; set; }
+
     public virtual DbSet<Unit> Units { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
-        => optionsBuilder.UseSqlServer("Data Source=localhost\\SQLEXPRESS03;Initial Catalog=TransLight;Integrated Security=True;Trust Server Certificate=True");
+        => optionsBuilder.UseSqlServer("Name=ConnectionStrings:DefaultConnection");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -451,6 +452,65 @@ public partial class TransLightContext : DbContext
                 .HasForeignKey(d => d.CountryId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_states_countries");
+        });
+
+        modelBuilder.Entity<Transaction>(entity =>
+        {
+            entity.ToTable("transactions");
+
+            entity.HasIndex(e => e.CompanyId, "IX_transactions_companies");
+
+            entity.HasIndex(e => e.CompanySiteId, "IX_transactions_company_sites");
+
+            entity.HasIndex(e => e.CurrencyId, "IX_transactions_currencies");
+
+            entity.Property(e => e.Id).HasDefaultValueSql("(newsequentialid())");
+            entity.Property(e => e.BasicAmt)
+                .HasColumnType("decimal(15, 2)")
+                .HasColumnName("basic_amt");
+            entity.Property(e => e.Cancel).HasColumnName("cancel");
+            entity.Property(e => e.CompanyId).HasColumnName("company_id");
+            entity.Property(e => e.CompanySiteId).HasColumnName("company_site_id");
+            entity.Property(e => e.CurrencyId).HasColumnName("currency_id");
+            entity.Property(e => e.Date).HasColumnName("date");
+            entity.Property(e => e.DeliveryType).HasColumnName("delivery_type");
+            entity.Property(e => e.ExchangeRate)
+                .HasColumnType("decimal(15, 2)")
+                .HasColumnName("exchange_rate");
+            entity.Property(e => e.GstAmt)
+                .HasColumnType("decimal(15, 2)")
+                .HasColumnName("gst_amt");
+            entity.Property(e => e.Id2Format)
+                .HasMaxLength(255)
+                .HasColumnName("id2_format");
+            entity.Property(e => e.PartyId).HasColumnName("party_id");
+            entity.Property(e => e.PartySiteId).HasColumnName("party_site_id");
+            entity.Property(e => e.Remarks)
+                .HasMaxLength(255)
+                .HasColumnName("remarks");
+            entity.Property(e => e.RoundOffAmt)
+                .HasColumnType("decimal(15, 2)")
+                .HasColumnName("round_off_amt");
+            entity.Property(e => e.TotalAmt)
+                .HasColumnType("decimal(15, 2)")
+                .HasColumnName("total_amt");
+            entity.Property(e => e.TransactionType).HasColumnName("transaction_type");
+            entity.Property(e => e.Type).HasColumnName("type");
+
+            entity.HasOne(d => d.Company).WithMany(p => p.Transactions)
+                .HasForeignKey(d => d.CompanyId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_transactions_companies");
+
+            entity.HasOne(d => d.CompanySite).WithMany(p => p.Transactions)
+                .HasForeignKey(d => d.CompanySiteId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_transactions_company_sites");
+
+            entity.HasOne(d => d.Currency).WithMany(p => p.Transactions)
+                .HasForeignKey(d => d.CurrencyId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_transactions_currencies");
         });
 
         modelBuilder.Entity<Unit>(entity =>

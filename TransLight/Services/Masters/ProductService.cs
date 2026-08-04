@@ -139,73 +139,75 @@ namespace TransLight.Services.Masters
 
         public async Task<ServiceReturn<Guid>> SaveAsync(ProductVM vm)
         {
-            var product = new Product()
-            {
-                Id = vm.Id ?? Guid.Empty,
-                Type = (int)ProductTypes.Product,
-                Name = vm.Name,
-                Make = vm.Make,
-                Pack = vm.Pack,
-                Rate = vm.Rate ?? 0,
-                Gst = vm.Gst,
-                CategoryId = vm.CategoryId,
-                UnitId = vm.UnitId,
-                Hsn = vm.Hsn,
-                Msl = vm.Msl,
-                Active = (int)vm.Active
-            };
+            Product product;
 
             if (vm.Id == null)
             {
-                // create
+                product = new Product
+                {
+                    Id = Guid.NewGuid(),
+                    Type = (int)ProductTypes.Product
+                };
+
                 _db.Products.Add(product);
             }
+
             else
             {
-                _db.Products.Update(product);
+                product = await _db.Products
+                    .Include(x => x.ProductRawMaterialProducts)
+                    .Include(x => x.ProductRawMaterialRawMaterials)
+                    .FirstOrDefaultAsync(x => x.Id == vm.Id);
 
-                #region Add/Update RawMaterials & ProduceMaterials
-                // Remove All existing RawMaterials and PackingMaterials
-                var existingMappings = _db.ProductRawMaterials
-                    .Where(x => x.ProductId == product.Id)
-                    .ToList();
-
-                if (existingMappings.Any())
-                    _db.ProductRawMaterials.RemoveRange(existingMappings);
-
-                // Update RawMaterials
-                if (vm.RawMaterials.Count > 0)
+                if (product == null)
                 {
-                    foreach (var item in vm.RawMaterials.Where(x => !x.IsSelected))
+                    return new ServiceReturn<Guid>
                     {
-                        _db.ProductRawMaterials.Add(new ProductRawMaterial
-                        {
-                            ProductId = product.Id,
-                            RawMaterialId = item.RawMaterialId,
-                            UnitId = item.UnitId,
-                            Qty = item.Qty,
-                            Type = (int)ProductTypes.RawMaterial
-                        });
-                    }
+                        Success = false,
+                        Message = "Product not found."
+                    };
                 }
-
-                // Update PackingMaterials
-                if (vm.PackingMaterials.Count > 0)
-                {
-                    foreach (var item in vm.PackingMaterials.Where(x => !x.IsSelected))
-                    {
-                        _db.ProductRawMaterials.Add(new ProductRawMaterial
-                        {
-                            ProductId = product.Id,
-                            RawMaterialId = item.RawMaterialId,
-                            UnitId = item.UnitId,
-                            Qty = item.Qty,
-                            Type = (int)ProductTypes.PackingMaterial
-                        });
-                    }
-                }
-                #endregion
+                _db.ProductRawMaterials.RemoveRange(product.ProductRawMaterialProducts);
             }
+
+            product.Name = vm.Name;
+            product.Make = vm.Make;
+            product.Pack = vm.Pack;
+            product.Rate = vm.Rate ?? 0;
+            product.Gst = vm.Gst;
+            product.CategoryId = vm.CategoryId;
+            product.UnitId = vm.UnitId;
+            product.Hsn = vm.Hsn;
+            product.Msl = vm.Msl;
+            product.Active = (int)vm.Active;
+
+            #region Add/Update RawMaterials & ProduceMaterials
+            // Update RawMaterials
+            foreach (var item in vm.RawMaterials.Where(x => !x.IsSelected))
+            {
+                product.ProductRawMaterialProducts.Add(new ProductRawMaterial
+                {
+                    ProductId = product.Id,
+                    RawMaterialId = item.RawMaterialId,
+                    UnitId = item.UnitId,
+                    Qty = item.Qty,
+                    Type = (int)ProductTypes.RawMaterial
+                });
+            }
+
+            // Update PackingMaterials
+            foreach (var item in vm.PackingMaterials.Where(x => !x.IsSelected))
+            {
+                product.ProductRawMaterialProducts.Add(new ProductRawMaterial
+                {
+                    ProductId = product.Id,
+                    RawMaterialId = item.RawMaterialId,
+                    UnitId = item.UnitId,
+                    Qty = item.Qty,
+                    Type = (int)ProductTypes.PackingMaterial
+                });
+            }
+            #endregion
 
             await _db.SaveChangesAsync();
 

@@ -6,7 +6,9 @@ using TransLight.DataAccess.Seeder;
 using TransLight.Services;
 using TransLight.Services.Interfaces;
 using TransLight.Services.Interfaces.Masters;
+using TransLight.Services.Interfaces.Store;
 using TransLight.Services.Masters;
+using TransLight.Services.Store;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -63,6 +65,9 @@ builder.Services.AddScoped<IRawMaterialService, RawMaterialServices>();
 builder.Services.AddScoped<IProductRawMaterialService, ProductRawMaterialService>();
 builder.Services.AddScoped<ICompanyService, CompanyService>();
 builder.Services.AddScoped<ICompanySitesService, CompanySiteService>();
+
+// Store Services
+builder.Services.AddScoped<IPurchaseOrderService, PurchaseOrderServices>();
 
 // File Upload Service
 builder.Services.AddScoped<IStorageService, LocalStorageService>();

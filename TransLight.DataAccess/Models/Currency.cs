@@ -10,4 +10,6 @@ public partial class Currency
     public string Code { get; set; } = null!;
 
     public string Name { get; set; } = null!;
+
+    public virtual ICollection<Transaction> Transactions { get; set; } = new List<Transaction>();
 }

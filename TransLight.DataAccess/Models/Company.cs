@@ -90,4 +90,6 @@ public partial class Company
     public string? ThemeColor { get; set; }
 
     public virtual ICollection<CompanySite> CompanySites { get; set; } = new List<CompanySite>();
+
+    public virtual ICollection<Transaction> Transactions { get; set; } = new List<Transaction>();
 }

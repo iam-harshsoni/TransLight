@@ -1,43 +1,11 @@
-﻿@model UnitVM
+﻿@model IEnumerable<PurchaseOrderVM>
 
 <div id="app" class="row" v-cloak>
-    <!-- Modal -->
-    <div class="modal fade text-xs-left" id="createEditForm" tabindex="-1" role="dialog" aria-labelledby="myModalLabel33" aria-hidden="true">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                    <label class="modal-title text-text-bold-600" id="myModalLabel33">Units Informaton</label>
-                </div>
-                <form asp-area="Masters" asp-controller="Unit" asp-action="Upsert" method="post" enctype="multipart/form-data">
-                    <div class="modal-body">
-                        <input type="hidden" name="Id" />
-                        <label>Code<span class="text-danger">*</span></label>
-                        <div class="form-group">
-                            <input name="Code" class="form-control" required />
-                        </div>
-
-                        <label>Name<span class="text-danger">*</span></label>
-                        <div class="form-group">
-                            <input name="Name" class="form-control" required />
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <input type="reset" class="btn btn-outline-secondary mr-1" data-dismiss="modal" value="close">
-                        <input type="submit" class="btn btn-outline-primary" value="Save">
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-
     <div class="col-xs-12">
         <div class="card">
             <div class="card-header">
-                <h4 class="card-title" style="display:inline-block;">Units</h4>
-                <a class="btn btn-outline-primary" style="float:right;" data-toggle="modal" data-target="#createEditForm">
+                <h4 class="card-title" style="display:inline-block;">All Products</h4>
+                <a asp-action="Upsert" class="btn btn-outline-primary" style="float:right;">
                     <i class="icon-plus"></i>
                 </a>
             </div>
@@ -47,29 +15,52 @@
                     <table class="table table-hover mb-0">
                         <thead>
                             <tr>
-                                <th style="text-align:center">Code</th>
-                                <th style="text-align:center">Name</th>
+                                <th style="text-align:center">PO NO</th>
+                                <th style="text-align:center">PO Date</th>
+                                <th style="text-align:center">Party</th>
+                                <th style="text-align:center">Amount</th>
+                                <th style="text-align:center">Cancel</th>
                             </tr>
                             <tr>
                                 <td class="p-1">
-                                    <input type="text" class="form-control" placeholder="code..."
-                                           v-model="search.code" />
+                                    <input type="text" class="form-control" placeholder="po no.." v-model="search.poNo" />
                                 </td>
+
                                 <td class="p-1">
-                                    <input type="text" class="form-control" placeholder="name..."
-                                           v-model="search.name" />
+                                    <input type="text" class="form-control" placeholder="date.." v-model="search.poDate" />
+                                </td>
+
+                                <td class="p-1">
+                                    <input type="text" class="form-control" placeholder="party.." v-model="search.partyName" />
+                                </td>
+
+                                <td class="p-1">
+                                    <input type="text" class="form-control" placeholder="0.00" v-model="search.amount" />
+                                </td>
+
+                                <td class="p-1">
+                                    <select class="form-control" v-model="search.cancel">
+                                        <option :value="-1"></option>
+                                        <option :value="1">No</option>
+                                        <option :value="0">Yes</option>
+                                    </select>
                                 </td>
                             </tr>
                         </thead>
+
                         <tbody>
                             <tr v-for="item in items" :key="item.id">
-                                <td>{{ item.code }}</td>
                                 <td>
-                                    <a :href="'/Masters/Unit/Upsert/' + item.id">{{ item.name }}</a>
+                                    <a :href="'/Masters/Product/Upsert/' + item.id">{{ item.id2Format }}</a>
                                 </td>
+                                <td>{{ item.date }}</td>
+                                <td></td>
+                                @* <td>{{ item.partyName }}</td> *@
+                                <td>{{ item.amount }}</td>
+                                <td class="text-center"><span :class="item.cancel == 'Yes' ? 'tag tag-success' : 'tag tag-danger'">{{ item.cancel }}</span></td>
                             </tr>
                             <tr v-if="items.length === 0 && !loading">
-                                <td colspan="2" class="text-center text-muted py-3">No matching units found.</td>
+                                <td colspan="10" class="text-center text-muted py-3">No matching purchase orders found.</td>
                             </tr>
                         </tbody>
                     </table>
@@ -117,11 +108,14 @@
         createApp({
             setup() {
                 const listManager = createListManager({
-                    url: "/Masters/Unit/GetUnitsData",
+                    url: "/Store/PurchaseOrder/GetPurchaseOrdersData",
                     pageSize: 10,
                     search: {
-                        code: "",
-                        name: ""
+                        poNo: "",
+                        poDate: "",
+                        partyName: "",
+                        amount: "",
+                        cancel: "",
                     }
                 });
 
