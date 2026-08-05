@@ -29,7 +29,7 @@ namespace TransLight.DataAccess.ViewModels.Store
 
         public decimal ExchangeRate { get; set; } = 1;
 
-        public DeliveryTypes DeliveryType { get; set; }
+        public DeliveryTypes DeliveryType { get; set; } = DeliveryTypes.None;
 
         public YesNo Cancel { get; set; } = YesNo.No;
 

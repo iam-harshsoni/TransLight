@@ -4,14 +4,16 @@ using TransLight.DataAccess.Data;
 using TransLight.DataAccess.Filters.Store;
 using TransLight.DataAccess.Models;
 using TransLight.DataAccess.ViewModels.Store;
+using TransLight.Services.Common;
 using TransLight.Services.Interfaces.Store;
 using TransLight.Utility.Enums;
 
 namespace TransLight.Services.Store
 {
-    public class PurchaseOrderServices(TransLightContext db) : BaseService<Transaction>(db), IPurchaseOrderService
+    public class PurchaseOrderServices(TransLightContext db, IHttpContextAccessor httpContextAccessor) : BaseService<Transaction>(db), IPurchaseOrderService
     {
         private TransLightContext _db = db;
+        private IHttpContextAccessor _httpContextAccessor = httpContextAccessor;
 
         public async Task<PaginatedResponse<PurchaseOrderVM>> GetPurchaseOrdersAsync(PurchaseOrderFilters filter, string? includeProperties = null)
         {
@@ -114,11 +116,72 @@ namespace TransLight.Services.Store
                 GstAmt = poData.GstAmt,
                 RoundOffAmt = poData.RoundOffAmt,
                 TotalAmt = poData.TotalAmt,
-
                 // PO Details List
             };
 
             return vm;
+        }
+
+        public async Task<ServiceReturn<Guid>> SaveAsync(PurchaseOrderVM vm)
+        {
+            Transaction purchaseOrder;
+
+            if (vm.Id == null)
+            {
+                purchaseOrder = new Transaction
+                {
+                    Id = Guid.Empty,
+                    TransactionType = (int)TransactionType.PurchaseOrder
+                };
+
+                _db.Transactions.Add(purchaseOrder);
+            }
+            else
+            {
+                purchaseOrder = (await _db.Transactions
+                    .Include(x => x.Company)
+                    .Include(x => x.CompanySite)
+                    .Include(x => x.Currency)
+                    .Where(x => x.Id == vm.Id && x.TransactionType == (int)TransactionType.PurchaseOrder)
+                    .FirstOrDefaultAsync()) ?? throw new InvalidOperationException("Purchase order not found.");
+
+                if (purchaseOrder == null)
+                {
+                    return new ServiceReturn<Guid>
+                    {
+                        Success = false,
+                        Message = "Purchase Order not found."
+                    };
+                }
+            }
+            purchaseOrder.Id2Format = vm.Id2Format;
+            purchaseOrder.Date = vm.Date;
+            purchaseOrder.CompanyId = vm.CompanyId;
+            purchaseOrder.CompanySiteId = vm.CompanySiteId;
+            purchaseOrder.PartyId = vm.PartyId;
+            purchaseOrder.PartySiteId = vm.PartySiteId;
+            purchaseOrder.CurrencyId = vm.CurrencyId;
+            purchaseOrder.ExchangeRate = vm.ExchangeRate;
+            purchaseOrder.DeliveryType = (int)vm.DeliveryType;
+            purchaseOrder.Cancel = (int)vm.Cancel;
+            purchaseOrder.BasicAmt = vm.BasicAmt;
+            purchaseOrder.GstAmt = vm.GstAmt;
+            purchaseOrder.RoundOffAmt = vm.RoundOffAmt;
+            purchaseOrder.TotalAmt = vm.TotalAmt;
+            purchaseOrder.Remarks = vm.Remarks ?? string.Empty;
+
+            // Add TransactionDetails
+
+            await _db.SaveChangesAsync();
+
+            return new ServiceReturn<Guid>
+            {
+                Success = true,
+                Message = vm.Id == null
+                    ? "Purchase Order created successfully."
+                    : "Purchase Order updated successfully.",
+                Data = purchaseOrder.Id
+            };
         }
     }
 }

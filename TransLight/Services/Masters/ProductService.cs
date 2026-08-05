@@ -145,7 +145,7 @@ namespace TransLight.Services.Masters
             {
                 product = new Product
                 {
-                    Id = Guid.NewGuid(),
+                    Id = Guid.Empty,
                     Type = (int)ProductTypes.Product
                 };
 
@@ -154,10 +154,10 @@ namespace TransLight.Services.Masters
 
             else
             {
-                product = await _db.Products
+                product = (await _db.Products
                     .Include(x => x.ProductRawMaterialProducts)
                     .Include(x => x.ProductRawMaterialRawMaterials)
-                    .FirstOrDefaultAsync(x => x.Id == vm.Id);
+                    .FirstOrDefaultAsync(x => x.Id == vm.Id))!;
 
                 if (product == null)
                 {

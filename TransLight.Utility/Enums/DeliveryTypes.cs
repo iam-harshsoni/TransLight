@@ -2,8 +2,8 @@
 {
     public enum DeliveryTypes
     {
-        NoDelivery = 0,
+        None = 0,
         DoorDelivery = 1,
-        GoDownDelivery = 1,
+        GoDownDelivery = 2,
     }
 }

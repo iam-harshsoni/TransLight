@@ -18,6 +18,7 @@
     <Folder Include="Areas\Store\Models\" />
     <Folder Include="Areas\UserManagement\Data\" />
     <Folder Include="Areas\UserManagement\Models\" />
+    <Folder Include="wwwroot\js\components\" />
     <Folder Include="wwwroot\uploads\company-documents\" />
   </ItemGroup>
 

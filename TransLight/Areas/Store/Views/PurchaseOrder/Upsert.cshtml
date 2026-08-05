@@ -1,0 +1,176 @@
+﻿@model PurchaseOrderVM
+
+@{
+	var companySites = (ViewBag.CompanySites as IEnumerable<CompanySitesVM>)?.ToList() ?? new List<CompanySitesVM>();
+	var currencies = (ViewBag.Currencies as IEnumerable<CurrencyVM>)?.ToList() ?? new List<CurrencyVM>();
+}
+
+<div id="formApp">
+	<section id="basic-form-layouts">
+		<div class="row match-height">
+			<div class="col-md-12">
+				<div class="card">
+					<div class="card-header">
+						<a asp-action="index">
+							<i class="icon-arrow-circle-o-left"></i>
+						</a>
+						<h4 class="card-title" style="display:inline-block;"> Purchase Order Info</h4>
+
+						<a asp-action="Upsert" class="btn btn-outline-primary" asp-route-id="" style="float:right;">
+							<i class="icon-plus"></i>
+						</a>
+					</div>
+
+					<form method="post" asp-action="Upsert" enctype="multipart/form-data">
+						@Html.AntiForgeryToken()
+						<input type="hidden" asp-for="Id" />
+
+						<div class="card-body collapse in">
+							<div class="card-block">
+								<div class="form-body">
+									<div class="row">
+										<div class="col-md-12">
+											<div class="row">
+												<div class="col-md-3">
+													<div class="form-group">
+														<label> Purchase Order No <span class="text-danger">*</span></label>
+														<input asp-for="Id2Format" class="form-control" placeholder="" required />
+													</div>
+												</div>
+
+												<div class="col-md-3">
+													<div class="form-group">
+														<label> Purchase Order Date <span class="text-danger">*</span></label>
+														<div class="input-group">
+															<span class="input-group-addon">
+																<i class="icon-calendar"></i>
+															</span>
+															<input asp-for="Date" type="text" class="form-control flatpicker" />
+														</div>
+														<span asp-validation-for="Date" class="text-danger"></span>
+													</div>
+												</div>
+
+												<div class="col-md-6">
+													<div class="form-group">
+														<label> Company Site <span class="text-danger">*</span></label>
+														<select asp-for="CompanySiteId" class="form-select company-site-select">
+															<option value=""> -- Select Company Site -- </option>
+															@foreach (var item in companySites)
+															{
+																<option value="@item.Id">@item.Name</option>
+															}
+														</select>
+													</div>
+												</div>
+											</div>
+
+											@* <div class="row">
+												<div class="col-md-12">
+													<div class="form-group">
+														<label> Address</label>
+														<textarea asp-for="Address" class="form-control" placeholder="Address"> </textarea>
+													</div>
+												</div>
+											</div> *@
+
+											<div class="row">
+												<div class="col-md-3">
+													<div class="form-group">
+														<label> Currency </label>
+														<select asp-for="CurrencyId" class="form-select currency-select">
+															<option value=""> -- Select Country -- </option>
+															@foreach (var item in currencies)
+															{
+																if (item.Name == "INR")
+																{
+																	<option value="@item.Id" selected>@item.Name</option>
+																}
+																else
+																{
+																	<option value="@item.Id">@item.Name</option>
+																}
+															}
+														</select>
+													</div>
+												</div>
+
+												<div class="col-md-3">
+													<div class="form-group">
+														<label> Exchange Rate</label>
+														<input asp-for="ExchangeRate" class="form-control" placeholder="0.00" value="1.00" />
+													</div>
+												</div>
+
+												<div class="col-md-3">
+													<div class="form-group">
+														<label> Delivery Type</label>
+														<select class="form-control" asp-for="DeliveryType">
+															<option value="0"></option>
+															<option value="1">Door Delivery</option>
+															<option value="2">GoDown Delivery</option>
+														</select>
+													</div>
+												</div>
+
+												<div class="col-md-3">
+													<div class="form-group">
+														<label> Cancel</label>
+														<select class="form-control" asp-for="Cancel">
+															<option value="1">No</option>
+															<option value="0">Yes</option>
+														</select>
+													</div>
+												</div>
+											</div>
+											<div class="row">
+												<div class="col-md-12">
+													<div class="form-group">
+														<label> Remarks </label>
+														<textarea asp-for="Remarks" class="form-control" placeholder="Remarks"></textarea>
+													</div>
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+
+								<div class="form-actions">
+									<a asp-action="Index" class="btn btn-warning"> <i class="icon-cross2"></i> Cancel</a>
+
+									<button type="submit" class="btn btn-primary ml-1">
+										<i class="icon-check2"></i> Save
+									</button>
+								</div>
+							</div>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+	</section>
+</div>
+
+@section Scripts {
+	<script>
+		$(document).ready(function() {
+			$('.company-site-select').select2({
+				placeholder: 'Search company site....',
+				allowClear: true,
+				width: '100%'
+			});
+
+			$('.currency-select').select2({
+				placeholder: 'Search currency....',
+				allowClear: true,
+				width: '100%'
+			});
+
+			$(".flatpicker").flatpickr({
+				dateFormat: "d/m/Y",
+				allowInput: true,
+				defaultDate: "today"
+			});
+		})
+	</script>
+}
