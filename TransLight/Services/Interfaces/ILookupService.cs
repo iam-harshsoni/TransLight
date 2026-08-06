@@ -8,7 +8,7 @@ namespace TransLight.Services.Interfaces
         Task<IEnumerable<CountryVM>> GetCountriesAsync();
         Task<IEnumerable<ProductCategoryVM>> GetProductCategoriesAsync();
         Task<IEnumerable<UnitVM>> GetUnitsAsync();
-        Task<IEnumerable<ProductVM>> GetProductsByTypeAsync(ProductTypes? type);
+        Task<IEnumerable<ProductVM>> GetProductsByTypeAsync(ProductTypes? type = 0);
         Task<IEnumerable<CurrencyVM>> GetCurrenciesAsync();
         Task<IEnumerable<CompanySitesVM>> GetCompanySitesAsync();
         Task<IEnumerable<CompanySitesVM>> GetCompanySitesByCompanyIdAsync(Guid id);

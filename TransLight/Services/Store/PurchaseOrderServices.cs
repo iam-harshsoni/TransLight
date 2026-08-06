@@ -116,7 +116,25 @@ namespace TransLight.Services.Store
                 GstAmt = poData.GstAmt,
                 RoundOffAmt = poData.RoundOffAmt,
                 TotalAmt = poData.TotalAmt,
-                // PO Details List
+
+                PurchaseOrderDetails = await _db.TransactionDetails.Where(x => x.TransactionId == poData.Id).Select(x => new PurchaseOrderDetailsVM
+                {
+                    Id = x.Id,
+                    Vertical = x.Vertical,
+                    TransactionId = x.TransactionId,
+                    SrNo = x.SrNo,
+                    ProductId = x.ProductId,
+                    ProductName = x.Product.Name,
+                    Description = x.Description,
+                    Qty = x.Qty,
+                    UnitId = x.UnitId,
+                    UnitCode = x.Unit.Code,
+                    Rate = x.Rate,
+                    BasicAmt = x.BasicAmt,
+                    GstPer = x.GstPer,
+                    GstAmt = x.GstAmt,
+                    TotalAmt = x.TotalAmt,
+                }).ToListAsync()
             };
 
             return vm;
@@ -142,6 +160,7 @@ namespace TransLight.Services.Store
                     .Include(x => x.Company)
                     .Include(x => x.CompanySite)
                     .Include(x => x.Currency)
+                    .Include(x => x.TransactionDetails)
                     .Where(x => x.Id == vm.Id && x.TransactionType == (int)TransactionType.PurchaseOrder)
                     .FirstOrDefaultAsync()) ?? throw new InvalidOperationException("Purchase order not found.");
 
@@ -170,7 +189,29 @@ namespace TransLight.Services.Store
             purchaseOrder.TotalAmt = vm.TotalAmt;
             purchaseOrder.Remarks = vm.Remarks ?? string.Empty;
 
-            // Add TransactionDetails
+            _db.TransactionDetails.RemoveRange(purchaseOrder.TransactionDetails);
+
+            #region Add/Update PurchaseOrderDetails
+            int sr = 0;
+            foreach (var item in vm.PurchaseOrderDetails.Where(x => !x.IsSelected))
+            {
+                purchaseOrder.TransactionDetails.Add(new TransactionDetail
+                {
+                    TransactionId = item.TransactionId,
+                    Vertical = "Store",
+                    SrNo = (sr += 1).ToString(),
+                    ProductId = item.ProductId,
+                    Description = item.Description,
+                    Qty = item.Qty,
+                    UnitId = item.UnitId,
+                    Rate = item.Rate,
+                    BasicAmt = item.Qty * item.Rate,
+                    GstPer = item.GstPer,
+                    GstAmt = Math.Round(item.BasicAmt * item.GstPer / 100m, 2),
+                    TotalAmt = item.BasicAmt + item.GstAmt
+                });
+            }
+            #endregion
 
             await _db.SaveChangesAsync();
 

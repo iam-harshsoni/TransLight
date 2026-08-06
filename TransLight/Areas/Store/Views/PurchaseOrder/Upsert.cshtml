@@ -3,6 +3,8 @@
 @{
 	var companySites = (ViewBag.CompanySites as IEnumerable<CompanySitesVM>)?.ToList() ?? new List<CompanySitesVM>();
 	var currencies = (ViewBag.Currencies as IEnumerable<CurrencyVM>)?.ToList() ?? new List<CurrencyVM>();
+	var products = (ViewBag.Products as IEnumerable<ProductVM>)?.ToList() ?? new List<ProductVM>();
+	var units = (ViewBag.Units as IEnumerable<UnitVM>)?.ToList() ?? new List<UnitVM>();
 }
 
 <div id="formApp">
@@ -14,7 +16,7 @@
 						<a asp-action="index">
 							<i class="icon-arrow-circle-o-left"></i>
 						</a>
-						<h4 class="card-title" style="display:inline-block;"> Purchase Order Info</h4>
+						<h4 class="card-title" style="display:inline-block; margin-left:1%"> Purchase Order Info</h4>
 
 						<a asp-action="Upsert" class="btn btn-outline-primary" asp-route-id="" style="float:right;">
 							<i class="icon-plus"></i>
@@ -123,11 +125,191 @@
 													</div>
 												</div>
 											</div>
-											<div class="row">
-												<div class="col-md-12">
-													<div class="form-group">
-														<label> Remarks </label>
-														<textarea asp-for="Remarks" class="form-control" placeholder="Remarks"></textarea>
+										</div>
+									</div>
+								</div>
+								
+								<div class="row">
+									<div class="col-md-12">
+										<div class="card">
+											<div class="card-header">
+												<h4 class="card-title" style="display:inline-block;">Transaction Details</h4>
+												<div class="heading-elements">
+													<ul class="list-inline mb-0">
+														<li><a data-action="collapse"><i class="icon-minus4"></i></a></li>
+														<li><a data-action="expand"><i class="icon-expand2"></i></a></li>
+													</ul>
+												</div>
+											</div>
+
+											<div class="card-body collapse in">
+												<div class="table-responsive">
+													<table class="table table-hover mb-0">
+														<thead>
+															<tr>
+																<th class="text-md-center align-text-top" width="5">#</th>
+
+																<th class="text-md-center text-danger align-text-top" width="200">Product <br /><span class="text-success" style="font-size:small">Description</span></th>
+																
+																<th class="text-md-center align-text-top" width="50">Qty</th>
+																
+																<th class="text-md-center align-text-top" width="50">Unit</th>
+																
+																<th class="text-md-center align-text-top" width="50">Rate <br /><span class=" text-success" style="font-size:small">Basic Amt</span></th>
+																
+																<th class="text-md-center align-text-top" width="50">Gst(%) <br /><span class=" text-success" style="font-size:small">Gst Amt</span></th>
+																
+																<th class="text-md-center align-text-top" width="50">Total Amt</th>
+																
+																<th class="text-md-center align-text-top" width="20">
+																	<i class="icon-trash4 cursor-pointer" @@click="selectAll.transaction_details = !selectAll.transaction_details"></i>
+																</th>
+															</tr>
+														</thead>
+
+														<tbody>
+															<tr v-for="(r, index) in transactionDetails" :key="index">
+																<td style="padding:5px;" class="text-md-center">
+																	<span class="mt-1">{{ index + 1 }}</span>
+																</td>
+
+																<td style="padding:5px">
+																	<input type="hidden" :name="'PurchaseOrderDetails[' + index + '].Id'" v-model="r.id" />
+																	<input type="hidden" :name="'PurchaseOrderDetails[' + index + '].TransactionId'" v-model="r.transactionId" />
+
+																	<select class="form-select" v-select2 :name="'PurchaseOrderDetails[' + index + '].ProductId'" v-model="r.productId" required>
+																		<option value="">-- Select Product --</option>
+																		@foreach (var item in products)
+																		{
+																			<option value="@item.Id">@item.Name</option>
+																		}
+																	</select> <br />
+
+																	<textarea rows="1" class="form-control" :name="'PurchaseOrderDetails[' + index + '].Description'" v-model="r.description"></textarea>
+																</td>
+
+																<td style="padding:5px">
+																	<input type="text" class="form-control text-md-right" :name="'PurchaseOrderDetails[' + index + '].Qty'" v-model="r.qty" @@input="calcTotal()" />
+																</td>
+
+																<td style="padding:5px">
+																	<input type="hidden" :name="'PurchaseOrderDetails[' + index + '].UnitId'" v-model="r.unitId" />
+
+																	<select class="form-select" v-select2 :name="'PurchaseOrderDetails[' + index + '].UnitId'" v-model="r.unitId" required>
+																		<option value="">-- Select Unit --</option>
+																		@foreach (var item in units)
+																		{
+																			<option value="@item.Id">@item.Name</option>
+																		}
+																	</select>
+																</td>
+
+																<td style="padding:5px">
+																	<input type="number" class="form-control text-md-right" :name="'PurchaseOrderDetails[' + index + '].Rate'" v-model="r.rate" @@input="calcTotal()" />
+
+																	<input type="number" class="form-control text-md-right" :name="'PurchaseOrderDetails[' + index + '].BasicAmt'" v-model="r.basicAmt" @@input="calcTotal()" readonly />
+																</td>
+
+																<td style="padding:5px">
+																	<input type="number" class="form-control text-md-right" :name="'PurchaseOrderDetails[' + index + '].GstPer'" v-model="r.gstPer" @@input="calcTotal()" />
+
+																	<input type="number" class="form-control text-md-right" :name="'PurchaseOrderDetails[' + index + '].GstAmt'" v-model="r.gstAmt" readonly />
+																</td>
+
+																<td style="padding:5px;">
+																	<input type="number" class="form-control text-md-right" :name="'PurchaseOrderDetails[' + index + '].TotalAmt'" v-model="r.totalAmt" readonly />
+																</td>
+
+																<td class="p-0 text-md-center">
+																	<div v-if="r.id != null">
+																		<input type="checkbox" class="mt-1 " v-bind:name="'PurchaseOrderDetails[' + index + '].IsSelected'" value="true" :checked="selectAll.transaction_details" />
+																	</div>
+
+																	<div v-if="r.id == null">
+																		<div style="margin-top: 13px; text-align: center;">
+																			<i class="icon-circle-cross cursor-pointer text-danger" @@click="removeTransactionDetails(index)"></i>
+																		</div>
+																	</div>
+
+																</td>
+															</tr>
+														</tbody>
+													</table>
+
+													<div class="p-1">
+														<button type="button" class="btn btn-outline-info full-width" v-on:click="addTransactionDetails"><i class="icon-plus"></i> Add Row </button>
+													</div>
+
+													<div class="p-1">
+														@* <div class="row">
+															<div class="col-md-6">
+																<div class="form-group">
+																	<label> Remarks </label>
+																	<textarea asp-for="Remarks" class="form-control" placeholder="Remarks"></textarea>
+																</div>
+															</div>
+															<div class="col-md-6" style="align-items-right">
+																<table>
+																	<tr>
+																		<td>Basic Amount</td>
+																		<td>0</td>
+																	</tr>
+																</table>
+															</div>
+														</div> *@
+														<div class="row mt-2">
+															<div class="col-md-7">
+																<div class="form-group">
+																	<label><strong>Remarks</strong></label>
+																	<textarea asp-for="Remarks"
+																			  class="form-control"
+																			  rows="5"
+																			  placeholder="Enter remarks..."></textarea>
+																</div>
+															</div>
+
+															<div class="col-md-5">
+																<table class="table table-borderless table-sm mb-0" style="width:100%;">
+																	<tbody>
+																		<tr>
+																			<td class="text-right font-weight-bold" style="text-align:center">
+																				Basic Amount
+																			</td>
+																			<td class="text-right" style="text-align:center">
+																				{{ total.basicAmt.toFixed(2) }}
+																			</td>
+																		</tr>
+
+																		<tr>
+																			<td class="text-right font-weight-bold" style="text-align:center">
+																				GST Amount
+																			</td>
+																			<td class="text-right" style="text-align:center">
+																				{{ total.gstAmt.toFixed(2) }}
+																			</td>
+																		</tr>
+
+																		<tr>
+																			<td class="text-right font-weight-bold" style="text-align:center">
+																				Round Off
+																			</td>
+																			<td class="text-right" style="text-align:center">
+																				{{ total.roundOff.toFixed(2) }}
+																			</td>
+																		</tr>
+
+																		<tr class="border-top border-bottom">
+																			<td class="text-right h5 font-weight-bold" style="text-align:center">
+																				Grand Total
+																			</td>
+																			<td class="text-right h5 font-weight-bold text-primary" style="text-align:center">
+																				{{ total.amount.toFixed(2) }}
+																			</td>
+																		</tr>
+																	</tbody>
+																</table>
+															</div>
+														</div>
 													</div>
 												</div>
 											</div>
@@ -172,5 +354,101 @@
 				defaultDate: "today"
 			});
 		})
+	</script>
+
+	<script>
+		const { createApp } = Vue;
+		const app = createApp({
+			data() {
+				return {
+					selectAll: {
+						transaction_details: false,
+					},
+					exchangeRate: @Model.ExchangeRate,
+					total: {
+						qty: 0,
+						basicAmt: 0,
+						gstAmt: 0,
+						roundOff: 0,
+						amount: 0,
+					},
+					transactionDetails: @Html.Raw(Json.Serialize(
+						Model.PurchaseOrderDetails.Select(x => new
+						{
+							id = x.Id,
+							transactionId = x.TransactionId,
+							srNo = x.SrNo,
+							productId = x.ProductId,
+							productName = x.ProductName,
+							description = x.Description,
+							qty = x.Qty,
+							unitId = x.UnitId,
+							unitCode = x.UnitCode,
+							rate = x.Rate,
+							basicAmt = x.BasicAmt,
+							gstPer = x.GstPer,
+							gstAmt = x.GstAmt,
+							totalAmt = x.TotalAmt,
+						})
+					)),
+				}
+			},
+			mounted() {
+				this.calcTotal();
+			},
+			methods: {
+				addTransactionDetails() {
+					this.transactionDetails.push({
+						id: null,
+						transactionId: @Html.Raw(Json.Serialize(Model.Id)),
+						productId: null,
+						productName: '',
+						description: '',
+						qty: 0,
+						unitId:0,
+						unitCode:'',
+						rate: 0,
+						basicAmt: 0,
+						gstPer: 0,
+						gstAmt: 0,
+						totalAmt: 0,
+					});
+				},
+				removeTransactionDetails(index) {
+					this.transactionDetails.splice(index, 1);
+				},
+				calcTotal() {
+					this.total.qty = 0;
+					this.total.basicAmt = 0;
+					this.total.gstAmt = 0;
+					this.total.amount = 0;
+				
+					this.transactionDetails.forEach(item => {
+
+						const qty = Number(item.qty) || 0;
+						const rate = Number(item.rate) || 0;
+						const gstPer = Number(item.gstPer) || 0;
+
+						item.basicAmt = qty * rate;
+						item.gstAmt = item.basicAmt * gstPer / 100;
+						item.totalAmt = (item.basicAmt + item.gstAmt) * this.exchangeRate;
+
+						this.total.qty += qty;
+						this.total.basicAmt += item.basicAmt;
+						this.total.gstAmt += item.gstAmt;
+						this.total.amount += item.totalAmt;
+					});
+
+					this.total.roundOff = Math.round(this.total.amount) - this.total.amount;
+				},
+				calcFinalTotal() {
+					let amount = parseFloat(Model.basic_amount) + parseFloat(Model.gst_amount) + parseFloat(Model.round_off);
+					Model.amount = amount.toFixed(2);
+				},
+			},
+		});
+
+		app.directive('select2', vueSelect2Directive);
+		app.mount('#formApp')
 	</script>
 }

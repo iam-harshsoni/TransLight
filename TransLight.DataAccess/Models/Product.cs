@@ -39,5 +39,7 @@ public partial class Product
 
     public virtual ICollection<ProductRawMaterial> ProductRawMaterialRawMaterials { get; set; } = new List<ProductRawMaterial>();
 
+    public virtual ICollection<TransactionDetail> TransactionDetails { get; set; } = new List<TransactionDetail>();
+
     public virtual Unit? Unit { get; set; }
 }

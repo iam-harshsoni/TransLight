@@ -38,6 +38,8 @@ public partial class TransLightContext : DbContext
 
     public virtual DbSet<Transaction> Transactions { get; set; }
 
+    public virtual DbSet<TransactionDetail> TransactionDetails { get; set; }
+
     public virtual DbSet<Unit> Units { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -511,6 +513,62 @@ public partial class TransLightContext : DbContext
                 .HasForeignKey(d => d.CurrencyId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_transactions_currencies");
+        });
+
+        modelBuilder.Entity<TransactionDetail>(entity =>
+        {
+            entity.ToTable("transaction_details");
+
+            entity.HasIndex(e => e.ProductId, "IX_transaction_details_products");
+
+            entity.HasIndex(e => e.TransactionId, "IX_transaction_details_transactions");
+
+            entity.HasIndex(e => e.UnitId, "IX_transaction_details_units");
+
+            entity.Property(e => e.Id).HasDefaultValueSql("(newsequentialid())");
+            entity.Property(e => e.BasicAmt)
+                .HasColumnType("decimal(15, 2)")
+                .HasColumnName("basic_amt");
+            entity.Property(e => e.Description)
+                .HasMaxLength(255)
+                .HasColumnName("description");
+            entity.Property(e => e.GstAmt)
+                .HasColumnType("decimal(15, 2)")
+                .HasColumnName("gst_amt");
+            entity.Property(e => e.GstPer)
+                .HasColumnType("decimal(15, 2)")
+                .HasColumnName("gst_per");
+            entity.Property(e => e.ProductId).HasColumnName("product_id");
+            entity.Property(e => e.Qty).HasColumnName("qty");
+            entity.Property(e => e.Rate)
+                .HasColumnType("decimal(15, 2)")
+                .HasColumnName("rate");
+            entity.Property(e => e.SrNo)
+                .HasMaxLength(255)
+                .HasColumnName("sr_no");
+            entity.Property(e => e.TotalAmt)
+                .HasColumnType("decimal(15, 2)")
+                .HasColumnName("total_amt");
+            entity.Property(e => e.TransactionId).HasColumnName("transaction_id");
+            entity.Property(e => e.UnitId).HasColumnName("unit_id");
+            entity.Property(e => e.Vertical)
+                .HasMaxLength(255)
+                .HasColumnName("vertical");
+
+            entity.HasOne(d => d.Product).WithMany(p => p.TransactionDetails)
+                .HasForeignKey(d => d.ProductId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_transaction_details_products");
+
+            entity.HasOne(d => d.Transaction).WithMany(p => p.TransactionDetails)
+                .HasForeignKey(d => d.TransactionId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_transaction_details_transactions");
+
+            entity.HasOne(d => d.Unit).WithMany(p => p.TransactionDetails)
+                .HasForeignKey(d => d.UnitId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_transaction_details_units");
         });
 
         modelBuilder.Entity<Unit>(entity =>

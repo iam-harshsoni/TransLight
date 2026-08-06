@@ -82,7 +82,8 @@ namespace TransLight.Areas.Store.Controllers
         {
             ViewBag.Currencies = await _lookupService.GetCurrenciesAsync();
             ViewBag.CompanySites = await _lookupService.GetCompanySitesByCompanyIdAsync(HttpContext.Session.GetCompanyId() ?? Guid.Empty);
-            // Parties
+            ViewBag.Products = await _lookupService.GetProductsByTypeAsync();
+            ViewBag.Units = await _lookupService.GetUnitsAsync();
             // Party Sites
         }
     }

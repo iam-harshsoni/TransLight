@@ -44,7 +44,7 @@ namespace TransLight.Services
             return result.ToList() ?? [];
         }
 
-        public async Task<IEnumerable<ProductVM>> GetProductsByTypeAsync(ProductTypes? type)
+        public async Task<IEnumerable<ProductVM>> GetProductsByTypeAsync(ProductTypes? type = 0)
         {
             var query = productService.GetAll();
 
