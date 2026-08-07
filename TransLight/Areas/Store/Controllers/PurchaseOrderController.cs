@@ -29,7 +29,8 @@ namespace TransLight.Areas.Store.Controllers
 
         public async Task<IActionResult> GetPurchaseOrdersData([FromQuery] PurchaseOrderFilters filter)
         {
-            var result = await _purchaseOrderService.GetPurchaseOrdersAsync(filter);
+            var companyId = HttpContext.Session.GetCompanyId();
+            var result = await _purchaseOrderService.GetPurchaseOrdersAsync(filter, companyId ?? Guid.Empty);
             return Json(result);
         }
 

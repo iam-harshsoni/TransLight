@@ -15,7 +15,7 @@ namespace TransLight.Services.Store
         private TransLightContext _db = db;
         private IHttpContextAccessor _httpContextAccessor = httpContextAccessor;
 
-        public async Task<PaginatedResponse<PurchaseOrderVM>> GetPurchaseOrdersAsync(PurchaseOrderFilters filter, string? includeProperties = null)
+        public async Task<PaginatedResponse<PurchaseOrderVM>> GetPurchaseOrdersAsync(PurchaseOrderFilters filter, Guid companyId, string? includeProperties = null)
         {
             IQueryable<Transaction> query = _db.Transactions;
 
@@ -28,7 +28,7 @@ namespace TransLight.Services.Store
                 }
             }
 
-            query = query.Where(x => x.TransactionType == (int)TransactionType.PurchaseOrder);
+            query = query.Where(x => x.TransactionType == (int)TransactionType.PurchaseOrder && x.CompanyId == companyId);
 
             if (!string.IsNullOrWhiteSpace(filter.PoNo))
                 query = query.Where(x => x.Id2Format != null && x.Id2Format.ToLower().Contains(filter.PoNo.ToLower()));
@@ -142,87 +142,145 @@ namespace TransLight.Services.Store
 
         public async Task<ServiceReturn<Guid>> SaveAsync(PurchaseOrderVM vm)
         {
-            Transaction purchaseOrder;
+            await using var transaction = await _db.Database.BeginTransactionAsync();
 
-            if (vm.Id == null)
+            try
             {
-                purchaseOrder = new Transaction
-                {
-                    Id = Guid.Empty,
-                    TransactionType = (int)TransactionType.PurchaseOrder
-                };
 
-                _db.Transactions.Add(purchaseOrder);
-            }
-            else
-            {
-                purchaseOrder = (await _db.Transactions
-                    .Include(x => x.Company)
-                    .Include(x => x.CompanySite)
-                    .Include(x => x.Currency)
-                    .Include(x => x.TransactionDetails)
-                    .Where(x => x.Id == vm.Id && x.TransactionType == (int)TransactionType.PurchaseOrder)
-                    .FirstOrDefaultAsync()) ?? throw new InvalidOperationException("Purchase order not found.");
+                Transaction? purchaseOrder;
+                bool isNew = vm.Id == null;
 
-                if (purchaseOrder == null)
+                if (isNew)
                 {
-                    return new ServiceReturn<Guid>
+                    purchaseOrder = new Transaction
                     {
-                        Success = false,
-                        Message = "Purchase Order not found."
+                        Id = Guid.Empty,
+                        TransactionType = (int)TransactionType.PurchaseOrder
                     };
+
+                    _db.Transactions.Add(purchaseOrder);
                 }
-            }
-            purchaseOrder.Id2Format = vm.Id2Format;
-            purchaseOrder.Date = vm.Date;
-            purchaseOrder.CompanyId = vm.CompanyId;
-            purchaseOrder.CompanySiteId = vm.CompanySiteId;
-            purchaseOrder.PartyId = vm.PartyId;
-            purchaseOrder.PartySiteId = vm.PartySiteId;
-            purchaseOrder.CurrencyId = vm.CurrencyId;
-            purchaseOrder.ExchangeRate = vm.ExchangeRate;
-            purchaseOrder.DeliveryType = (int)vm.DeliveryType;
-            purchaseOrder.Cancel = (int)vm.Cancel;
-            purchaseOrder.BasicAmt = vm.BasicAmt;
-            purchaseOrder.GstAmt = vm.GstAmt;
-            purchaseOrder.RoundOffAmt = vm.RoundOffAmt;
-            purchaseOrder.TotalAmt = vm.TotalAmt;
-            purchaseOrder.Remarks = vm.Remarks ?? string.Empty;
-
-            _db.TransactionDetails.RemoveRange(purchaseOrder.TransactionDetails);
-
-            #region Add/Update PurchaseOrderDetails
-            int sr = 0;
-            foreach (var item in vm.PurchaseOrderDetails.Where(x => !x.IsSelected))
-            {
-                purchaseOrder.TransactionDetails.Add(new TransactionDetail
+                else
                 {
-                    TransactionId = item.TransactionId,
-                    Vertical = "Store",
-                    SrNo = (sr += 1).ToString(),
-                    ProductId = item.ProductId,
-                    Description = item.Description,
-                    Qty = item.Qty,
-                    UnitId = item.UnitId,
-                    Rate = item.Rate,
-                    BasicAmt = item.Qty * item.Rate,
-                    GstPer = item.GstPer,
-                    GstAmt = Math.Round(item.BasicAmt * item.GstPer / 100m, 2),
-                    TotalAmt = item.BasicAmt + item.GstAmt
-                });
+                    purchaseOrder = (await _db.Transactions
+                        .Include(x => x.Company)
+                        .Include(x => x.CompanySite)
+                        .Include(x => x.Currency)
+                        .Include(x => x.TransactionDetails)
+                        .Where(x => x.Id == vm.Id && x.TransactionType == (int)TransactionType.PurchaseOrder)
+                        .FirstOrDefaultAsync());
+
+                    if (purchaseOrder == null)
+                    {
+                        return new ServiceReturn<Guid>
+                        {
+                            Success = false,
+                            Message = "Purchase Order not found."
+                        };
+                    }
+                }
+                purchaseOrder.Id2Format = vm.Id2Format;
+                purchaseOrder.Date = vm.Date;
+                purchaseOrder.CompanyId = vm.CompanyId;
+                purchaseOrder.CompanySiteId = vm.CompanySiteId;
+                purchaseOrder.PartyId = vm.PartyId;
+                purchaseOrder.PartySiteId = vm.PartySiteId;
+                purchaseOrder.CurrencyId = vm.CurrencyId;
+                purchaseOrder.ExchangeRate = vm.ExchangeRate;
+                purchaseOrder.DeliveryType = (int)vm.DeliveryType;
+                purchaseOrder.Cancel = (int)vm.Cancel;
+                purchaseOrder.BasicAmt = vm.BasicAmt;
+                purchaseOrder.GstAmt = vm.GstAmt;
+                purchaseOrder.RoundOffAmt = vm.RoundOffAmt;
+                purchaseOrder.TotalAmt = vm.TotalAmt;
+                purchaseOrder.Remarks = vm.Remarks ?? string.Empty;
+
+                #region Sync PurchaseOrderDetails (update/insert/delete instead of wipe+reinsert)
+
+                var incomingItems = vm.PurchaseOrderDetails
+                    .Where(x => !x.IsSelected)
+                    .ToList();
+
+                // Existing rows keyed by Id for O(1) lookup
+                var existingById = purchaseOrder.TransactionDetails.ToDictionary(x => x.Id);
+
+                var keptIds = new HashSet<Guid>();
+                int sr = 0;
+
+                foreach (var item in incomingItems)
+                {
+                    sr += 1;
+                    var basicAmt = item.Qty * item.Rate;
+                    var gstAmt = Math.Round(basicAmt * item.GstPer / 100m, 2);
+                    var totalAmt = basicAmt + gstAmt;
+
+                    if (item.Id.HasValue && existingById.TryGetValue(item.Id.Value, out var existingDetail))
+                    {
+                        // update
+                        existingDetail.SrNo = sr.ToString();
+                        existingDetail.Vertical = "Store";
+                        existingDetail.ProductId = item.ProductId;
+                        existingDetail.Description = item.Description;
+                        existingDetail.Qty = item.Qty;
+                        existingDetail.UnitId = item.UnitId;
+                        existingDetail.Rate = item.Rate;
+                        existingDetail.BasicAmt = item.Qty * item.Rate;
+                        existingDetail.GstPer = basicAmt;
+                        existingDetail.GstAmt = gstAmt;
+                        existingDetail.TotalAmt = totalAmt;
+
+                        keptIds.Add(existingDetail.Id);
+                    }
+                    else
+                    {
+                        // insert
+                        var newDetails = new TransactionDetail()
+                        {
+                            TransactionId = purchaseOrder.Id,
+                            SrNo = sr.ToString(),
+                            Vertical = "Store",
+                            ProductId = item.ProductId,
+                            Description = item.Description,
+                            Qty = item.Qty,
+                            UnitId = item.UnitId,
+                            Rate = item.Rate,
+                            BasicAmt = item.Qty * item.Rate,
+                            GstPer = basicAmt,
+                            GstAmt = gstAmt,
+                            TotalAmt = totalAmt,
+                        };
+
+                        purchaseOrder.TransactionDetails.Add(newDetails);
+                    }
+                }
+
+                // Remove rows that existed before but werent in the incoming list
+                var detailsToRemove = purchaseOrder.TransactionDetails
+                    .Where(x => x.Id != Guid.Empty && !keptIds.Contains(x.Id))
+                    .ToList();
+
+                if (detailsToRemove.Count > 0)
+                    _db.TransactionDetails.RemoveRange(detailsToRemove);
+
+                #endregion
+
+                await _db.SaveChangesAsync();
+                await transaction.CommitAsync();
+
+                return new ServiceReturn<Guid>
+                {
+                    Success = true,
+                    Message = vm.Id == null
+                        ? "Purchase Order created successfully."
+                        : "Purchase Order updated successfully.",
+                    Data = purchaseOrder.Id
+                };
             }
-            #endregion
-
-            await _db.SaveChangesAsync();
-
-            return new ServiceReturn<Guid>
+            catch (Exception ex)
             {
-                Success = true,
-                Message = vm.Id == null
-                    ? "Purchase Order created successfully."
-                    : "Purchase Order updated successfully.",
-                Data = purchaseOrder.Id
-            };
+                await transaction.RollbackAsync();
+                throw;
+            }
         }
     }
 }
